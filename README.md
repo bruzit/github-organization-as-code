@@ -2,6 +2,12 @@
 
 GitHub organization managed as code.
 
+## Features
+
+- **Automated GitHub Organization management** - Define repositories using simple YAML file.
+- **Terraform** - Uses Terraform under the hood to apply changes efficiently.
+- **GitHub App Integration** - Uses a GitHub App for authentication and API interactions.
+
 ## Setup
 
 ### GitHub App
@@ -28,6 +34,25 @@ To create a GitHub App and a GitHub App Installation:
       - _your organization_: **Install**
 
 ## Usage
+
+### GitHub Organization Configuration YAML
+
+Create the configuration file:
+
+```yaml
+---
+repositories:
+  - name: repo-slug
+```
+
+Set it as source of truth:
+
+```shell
+# The path is relative to the terraform main module (terraform directory)
+export TF_VAR_config="../test.yaml"
+```
+
+### Local Usage
 
 Export variables `GITHUB_APP_ID`, `GITHUB_APP_INSTALLATION_ID`, and `GITHUB_APP_PEM_FILE`, or when using direnv set up [`.env`](.env) as shown in the template [`.env.tmpl`](.env.tmpl).
 
