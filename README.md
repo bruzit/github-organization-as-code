@@ -29,7 +29,14 @@ To create a GitHub App and a GitHub App Installation:
 
 ## Usage
 
+Export variables `GITHUB_APP_ID`, `GITHUB_APP_INSTALLATION_ID`, and `GITHUB_APP_PEM_FILE`, or when using direnv set up [`.env`](.env) as shown in the template [`.env.tmpl`](.env.tmpl).
+
 ```shell
+direnv allow
+# direnv: loading ~/bruzit/github-organization-as-code/.envrc
+# direnv: export +GH_OWNER +GITHUB_APP_ID +GITHUB_APP_INSTALLATION_ID +GITHUB_APP_PEM_FILE
+
+# Use Terraform as you need
 terraform -chdir=terraform init
 terraform -chdir=terraform plan
 terraform -chdir=terraform apply

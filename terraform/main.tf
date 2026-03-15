@@ -1,3 +1,3 @@
-data "github_app" "test" {
-  slug = "bruzit-github-organization-as-code"
+data "github_repositories" "example" {
+  query = "org:bruzit"
 }
