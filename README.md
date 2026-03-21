@@ -54,6 +54,24 @@ repositories:
   - name: .github
 ```
 
+### GitHub Workflow
+
+Set up GitHub actions, variables and secrets:
+
+- GitHub / *Repository* / Settings
+  - Secrets and variables / Actions / Actions secrets and variables
+    - Secrets
+      - **New repository secret**
+        - `GH_APP_PEM_FILE` (`GITHUB_APP_PEM_FILE_PATH` contents)
+        - `AWS_ACCESS_KEY_ID`
+        - `AWS_SECRET_ACCESS_KEY`
+    - Variables
+      - **New repository variable**
+        - `GH_OWNER` (`GITHUB_OWNER`)
+        - `GH_APP_ID` (`GITHUB_APP_ID`)
+        - `GH_APP_INSTALLATION_ID` (`GITHUB_APP_INSTALLATION_ID`)
+        - `AWS_ENDPOINT_URL_S3`
+
 ## Usage
 
 ### GitHub Organization Configuration YAML
