@@ -5,10 +5,19 @@ GitHub organization managed as code.
 ## Features
 
 - **Automated GitHub Organization management** - Define repositories using simple YAML file.
+- **GitOps Workflow** - Manage configurations using pull requests and automate updates using GitHub Actions.
 - **Terraform** - Uses Terraform under the hood to apply changes efficiently.
+- **Terraform State Management** - Stores Terraform state securely in AWS S3.
 - **GitHub App Integration** - Uses a GitHub App for authentication and API interactions.
 
-## Setup
+## Installation and Configuration
+
+- Configure an AWS S3 bucket to store Terraform state files.
+- Set up a GitHub App and its installation to handle authentication and authorization for your GitHub Organization.
+- Implement GitOps by setting up a GitHub repository with:
+  - YAML-based configuration
+  - GitHub workflows
+  - Repository variables and secrets
 
 ### GitHub App
 
@@ -32,6 +41,18 @@ To create a GitHub App and a GitHub App Installation:
       - **Generate a private key**
     - Install App
       - _your organization_: **Install**
+
+### GitHub Organization as Code
+
+Create GitHub organization YAML configuration file. See [GitHub Organization YAML](#github-organization-yaml) below.
+
+For example:
+
+```yaml
+---
+repositories:
+  - name: .github
+```
 
 ## Usage
 
@@ -59,7 +80,7 @@ Export variables `GITHUB_APP_ID`, `GITHUB_APP_INSTALLATION_ID`, and `GITHUB_APP_
 ```shell
 direnv allow
 # direnv: loading ~/bruzit/github-organization-as-code/.envrc
-# direnv: export +GH_OWNER +GITHUB_APP_ID +GITHUB_APP_INSTALLATION_ID +GITHUB_APP_PEM_FILE
+# direnv: export +AWS_ACCESS_KEY_ID +AWS_ENDPOINT_URL_S3 +AWS_SECRET_ACCESS_KEY +GITHUB_APP_ID +GITHUB_APP_INSTALLATION_ID +GITHUB_APP_PEM_FILE +GITHUB_APP_PEM_FILE_PATH +GITHUB_OWNER +TF_VAR_config
 
 # Use Terraform as you need
 terraform -chdir=terraform init
