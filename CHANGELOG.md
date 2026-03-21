@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.0](https://github.com/bruzit/github-organization-as-code/compare/v0.1.0...v0.2.0) (2026-03-21)
+
+### Features
+
+* add aws s3 compatible backend ([9a8579c](https://github.com/bruzit/github-organization-as-code/commit/9a8579c109d08651c272c3e1d92049960ace2c58))
+
 ## [0.1.0](https://github.com/bruzit/github-organization-as-code/compare/v0.0.0...v0.1.0) (2026-03-21)
 
 ### Features
