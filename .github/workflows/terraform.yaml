@@ -17,7 +17,7 @@ env:
   GITHUB_APP_INSTALLATION_ID: ${{ vars.GH_APP_INSTALLATION_ID }}
   GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
   # Terraform configuration
-  TF_WORKSPACE: ${{ github.repository_owner }}
+  TF_WORKSPACE: ${{ vars.GH_OWNER }}
   TF_VAR_config: test.yaml
   TF_IN_AUTOMATION: true
 
