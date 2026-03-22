@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.0](https://github.com/bruzit/github-organization-as-code/compare/v0.3.0...v0.4.0) (2026-03-22)
+
+### Features
+
+* add repository metadata ([2a56217](https://github.com/bruzit/github-organization-as-code/commit/2a562179fc889a44bf81dc578524176d1d5e8c57))
+
 ## [0.3.0](https://github.com/bruzit/github-organization-as-code/compare/v0.2.0...v0.3.0) (2026-03-22)
 
 ### Features
