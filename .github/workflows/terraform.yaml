@@ -12,12 +12,13 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   # GitHub App configuration
-  GITHUB_OWNER: ${{ vars.GH_OWNER }}
-  GITHUB_APP_ID: ${{ vars.GH_APP_ID }}
-  GITHUB_APP_INSTALLATION_ID: ${{ vars.GH_APP_INSTALLATION_ID }}
-  GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE }}
+  GITHUB_OWNER: ${{ vars.GH_TF_OWNER }}
+  GITHUB_APP_ID: ${{ vars.GH_TF_APP_ID }}
+  GITHUB_APP_INSTALLATION_ID: ${{ vars.GH_TF_APP_INSTALLATION_ID }}
+  GITHUB_APP_PEM_FILE: |
+    ${{ secrets.GH_TF_APP_PEM_FILE }}
   # Terraform configuration
-  TF_WORKSPACE: ${{ vars.GH_OWNER }}
+  TF_WORKSPACE: ${{ vars.GH_TF_OWNER }}
   TF_VAR_config: "../test.yaml"
   TF_IN_AUTOMATION: true
 
