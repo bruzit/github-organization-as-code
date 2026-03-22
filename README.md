@@ -5,7 +5,7 @@ GitHub organization managed as code.
 ## Features
 
 - **Automated GitHub Organization management** - Define repositories using simple YAML file.
-- **GitOps Workflow** - Manage configurations using pull requests and automate updates using GitHub Actions.
+- **Reusable GitOps Workflow** - Manage configurations using pull requests and automate updates using GitHub Actions.
 - **Terraform** - Uses Terraform under the hood to apply changes efficiently.
 - **Terraform State Management** - Stores Terraform state securely in AWS S3.
 - **GitHub App Integration** - Uses a GitHub App for authentication and API interactions.
@@ -46,7 +46,7 @@ To create a GitHub App and a GitHub App Installation:
 
 Create GitHub organization YAML configuration file. See [GitHub Organization YAML](#github-organization-yaml) below.
 
-For example:
+For example, `config.yaml`:
 
 ```yaml
 ---
@@ -55,6 +55,30 @@ repositories:
 ```
 
 ### GitHub Workflow
+
+Create the workflow:
+
+```yaml
+---
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  call-terraform:
+    uses: bruzit/github-organization-as-code/.github/workflows/terraform.yaml@v0
+    with:
+      aws_endpoint_url_s3: ${{ vars.AWS_ENDPOINT_URL_S3 }}
+      gh_owner: ${{ vars.GH_TF_OWNER }}
+      gh_app_id: ${{ vars.GH_TF_APP_ID }}
+      gh_app_installation_id: ${{ vars.GH_TF_APP_INSTALLATION_ID }}
+      path: config.yaml
+    secrets:
+      aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      gh_app_pem_file: ${{ secrets.GH_TF_APP_PEM_FILE }}
+```
 
 Set up GitHub actions, variables and secrets:
 

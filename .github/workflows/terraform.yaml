@@ -5,21 +5,45 @@ on:
   push:
     branches:
       - main
+  workflow_call:
+    inputs:
+      aws_endpoint_url_s3:
+        type: string
+        required: true
+      gh_owner:
+        type: string
+        required: true
+      gh_app_id:
+        type: string
+        required: true
+      gh_app_installation_id:
+        type: string
+        required: true
+      path:
+        type: string
+        required: true
+    secrets:
+      aws_access_key_id:
+        required: true
+      aws_secret_access_key:
+        required: true
+      gh_app_pem_file:
+        required: true
 
 env:
   # S3 backend configuration
-  AWS_ENDPOINT_URL_S3: ${{ vars.AWS_ENDPOINT_URL_S3 }}
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_ENDPOINT_URL_S3: ${{ inputs.aws_endpoint_url_s3 || vars.AWS_ENDPOINT_URL_S3 }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.aws_access_key_id || secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_access_key || secrets.AWS_SECRET_ACCESS_KEY }}
   # GitHub App configuration
-  GITHUB_OWNER: ${{ vars.GH_TF_OWNER }}
-  GITHUB_APP_ID: ${{ vars.GH_TF_APP_ID }}
-  GITHUB_APP_INSTALLATION_ID: ${{ vars.GH_TF_APP_INSTALLATION_ID }}
+  GITHUB_OWNER: ${{ inputs.gh_owner || vars.GH_TF_OWNER }}
+  GITHUB_APP_ID: ${{ inputs.gh_app_id || vars.GH_TF_APP_ID }}
+  GITHUB_APP_INSTALLATION_ID: ${{ inputs.gh_app_installation_id || vars.GH_TF_APP_INSTALLATION_ID }}
   GITHUB_APP_PEM_FILE: |
-    ${{ secrets.GH_TF_APP_PEM_FILE }}
+    ${{ secrets.gh_app_pem_file || secrets.GH_TF_APP_PEM_FILE }}
   # Terraform configuration
-  TF_WORKSPACE: ${{ vars.GH_TF_OWNER }}
-  TF_VAR_config: "../test.yaml"
+  TF_WORKSPACE: ${{ inputs.gh_owner || vars.GH_TF_OWNER }}
+  TF_VAR_config: ${{ inputs.path && format('../config/{0}', inputs.path) || '../test.yaml' }}
   TF_IN_AUTOMATION: true
 
 defaults:
@@ -31,8 +55,17 @@ jobs:
     name: Terraform Apply
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the repository
+      - name: Checkout the called repository
         uses: actions/checkout@v6
+        with:
+          repository: bruzit/github-organization-as-code
+      - name: Checkout the caller repository
+        if: github.repository != 'bruzit/github-organization-as-code'
+        uses: actions/checkout@v6
+        with:
+          path: config
+          sparse-checkout: ${{ inputs.path || 'test.yaml' }}
+          sparse-checkout-cone-mode: false
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v4
         with:
