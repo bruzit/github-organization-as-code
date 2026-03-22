@@ -5,6 +5,7 @@ GitHub organization managed as code.
 ## Features
 
 - **Automated GitHub Organization management** - Define repositories using simple YAML file.
+  - **Repository metadata** - Define description, homepage URL, topics.
 - **Reusable GitOps Workflow** - Manage configurations using pull requests and automate updates using GitHub Actions.
 - **Terraform** - Uses Terraform under the hood to apply changes efficiently.
 - **Terraform State Management** - Stores Terraform state securely in AWS S3.
@@ -106,6 +107,10 @@ Create the configuration file:
 ---
 repositories:
   - name: repo-slug
+    description: "The repository description." # OPTIONAL, DEFAULT none
+    homepage_url: https://example.com/ # OPTIONAL, DEFAULT none
+    topics: # OPTIONAL, DEFAULT none
+      - some-topic
 ```
 
 Set it as source of truth:
