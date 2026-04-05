@@ -1,11 +1,12 @@
 ---
 repositories:
   - name: .github
-    description: "BruzIT Test organization profile and management."
+    description: "BruzIT Test organization profile and repository management."
     topics:
-      - github-organization-profile
       - github-profile
       - github-profile-readme
+      - github-organization-profile
+      - github-organization-management
   - name: template
     description: "Standardized repository scaffold for BruzIT projects. Pre-configured with semantic-release, license boilerplate, README structure, and initial v0.0.0 tag."
     topics:
