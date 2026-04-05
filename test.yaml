@@ -11,3 +11,7 @@ repositories:
     topics:
       - repository-template
     is_template: true
+  - name: template-use
+    template:
+      owner: bruzit-test
+      repository: template

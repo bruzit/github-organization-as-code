@@ -14,4 +14,18 @@ resource "github_repository" "this" {
 
   # Properties
   is_template = try(each.value.is_template, null)
+
+  # Contents
+  dynamic "template" {
+    for_each = (
+      try(each.value.template, null) != null &&
+      length(try(each.value.template, {})) > 0
+    ) ? [each.value.template] : []
+
+    content {
+      owner                = template.value.owner
+      repository           = template.value.repository
+      include_all_branches = try(template.value.include_all_branches, false)
+    }
+  }
 }

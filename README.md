@@ -115,6 +115,11 @@ repositories:
       - another-topic
     # Properties
     is_template: true # OPTIONAL, DEFAULT false
+    # Contents
+    template: # OPTIONAL, DEFAULT none
+      owner: bruzit
+      repository: template
+      include_all_branches: true # OPTIONAL, DEFAULT false
 ```
 
 Set it as source of truth:
