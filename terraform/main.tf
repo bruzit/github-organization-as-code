@@ -11,4 +11,7 @@ resource "github_repository" "this" {
   description  = try(each.value.description, null)
   homepage_url = try(each.value.homepage_url, null)
   topics       = try(each.value.topics, null)
+
+  # Properties
+  is_template = try(each.value.is_template, null)
 }
