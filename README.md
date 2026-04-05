@@ -107,10 +107,14 @@ Create the configuration file:
 ---
 repositories:
   - name: repo-slug
+  # Metadata
     description: "The repository description." # OPTIONAL, DEFAULT none
     homepage_url: https://example.com/ # OPTIONAL, DEFAULT none
     topics: # OPTIONAL, DEFAULT none
       - some-topic
+      - another-topic
+    # Properties
+    is_template: true # OPTIONAL, DEFAULT false
 ```
 
 Set it as source of truth:
