@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/bruzit/github-organization-as-code/compare/v0.4.0...v0.5.0) (2026-04-14)
+
+### Features
+
+* add repository is_template property ([1085f1a](https://github.com/bruzit/github-organization-as-code/commit/1085f1a8f8d99afb76cd4ef35a0300e4b269837d))
+* add repository template ([6448916](https://github.com/bruzit/github-organization-as-code/commit/64489166e5f4c5de5d4a3a27acf4ec83aa3824a2))
+
 ## [0.4.0](https://github.com/bruzit/github-organization-as-code/compare/v0.3.0...v0.4.0) (2026-03-22)
 
 ### Features
