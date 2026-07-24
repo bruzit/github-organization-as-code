@@ -70,6 +70,7 @@ jobs:
   call-terraform:
     uses: bruzit/github-organization-as-code/.github/workflows/terraform.yaml@v0
     with:
+      aws_bucket: ${{ vars.AWS_TF_BUCKET }}
       aws_endpoint_url_s3: ${{ vars.AWS_ENDPOINT_URL_S3 }}
       gh_owner: ${{ vars.GH_TF_OWNER }}
       gh_app_id: ${{ vars.GH_TF_APP_ID }}
@@ -96,6 +97,7 @@ Set up GitHub actions, variables and secrets:
         - `GH_TF_APP_ID` (`GITHUB_APP_ID`)
         - `GH_TF_APP_INSTALLATION_ID` (`GITHUB_APP_INSTALLATION_ID`)
         - `AWS_ENDPOINT_URL_S3`
+        - `AWS_TF_BUCKET` (S3 bucket name for Terraform state)
 
 ## Usage
 
