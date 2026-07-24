@@ -33,6 +33,10 @@ on:
       gh_app_pem_file:
         required: true
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
   # S3 backend configuration
   AWS_BUCKET: ${{ inputs.aws_bucket || vars.AWS_TF_BUCKET }}
