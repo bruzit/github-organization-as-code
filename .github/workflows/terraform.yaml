@@ -7,6 +7,9 @@ on:
       - main
   workflow_call:
     inputs:
+      aws_bucket:
+        type: string
+        required: true
       aws_endpoint_url_s3:
         type: string
         required: true
@@ -32,6 +35,7 @@ on:
 
 env:
   # S3 backend configuration
+  AWS_BUCKET: ${{ inputs.aws_bucket || vars.AWS_TF_BUCKET }}
   AWS_ENDPOINT_URL_S3: ${{ inputs.aws_endpoint_url_s3 || vars.AWS_ENDPOINT_URL_S3 }}
   AWS_ACCESS_KEY_ID: ${{ secrets.aws_access_key_id || secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_access_key || secrets.AWS_SECRET_ACCESS_KEY }}
@@ -72,6 +76,6 @@ jobs:
           terraform_version: 1.14.7
       - name: Terraform init
         id: init
-        run: terraform -chdir=terraform init -input=false
+        run: terraform -chdir=terraform init -input=false -backend-config="bucket=$AWS_BUCKET"
       - name: Terraform Apply
         run: terraform -chdir=terraform apply -auto-approve -input=false
