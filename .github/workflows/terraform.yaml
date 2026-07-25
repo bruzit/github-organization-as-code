@@ -13,13 +13,13 @@ on:
       aws_endpoint_url_s3:
         type: string
         required: true
-      gh_owner:
+      gh_tf_owner:
         type: string
         required: true
-      gh_app_id:
+      gh_tf_app_id:
         type: string
         required: true
-      gh_app_installation_id:
+      gh_tf_app_installation_id:
         type: string
         required: true
       path:
@@ -30,7 +30,7 @@ on:
         required: true
       aws_secret_access_key:
         required: true
-      gh_app_pem_file:
+      gh_tf_app_pem_file:
         required: true
 
 concurrency:
@@ -44,13 +44,13 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.aws_access_key_id || secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_access_key || secrets.AWS_SECRET_ACCESS_KEY }}
   # GitHub App configuration
-  GITHUB_OWNER: ${{ inputs.gh_owner || vars.GH_TF_OWNER }}
-  GITHUB_APP_ID: ${{ inputs.gh_app_id || vars.GH_TF_APP_ID }}
-  GITHUB_APP_INSTALLATION_ID: ${{ inputs.gh_app_installation_id || vars.GH_TF_APP_INSTALLATION_ID }}
+  GITHUB_OWNER: ${{ inputs.gh_tf_owner || vars.GH_TF_OWNER }}
+  GITHUB_APP_ID: ${{ inputs.gh_tf_app_id || vars.GH_TF_APP_ID }}
+  GITHUB_APP_INSTALLATION_ID: ${{ inputs.gh_tf_app_installation_id || vars.GH_TF_APP_INSTALLATION_ID }}
   GITHUB_APP_PEM_FILE: |
-    ${{ secrets.gh_app_pem_file || secrets.GH_TF_APP_PEM_FILE }}
+    ${{ secrets.gh_tf_app_pem_file || secrets.GH_TF_APP_PEM_FILE }}
   # Terraform configuration
-  TF_WORKSPACE: ${{ inputs.gh_owner || vars.GH_TF_OWNER }}
+  TF_WORKSPACE: ${{ inputs.gh_tf_owner || vars.GH_TF_OWNER }}
   TF_VAR_config: ${{ inputs.path && format('../config/{0}', inputs.path) || '../test.yaml' }}
   TF_IN_AUTOMATION: true
 

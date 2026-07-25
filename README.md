@@ -72,14 +72,14 @@ jobs:
     with:
       aws_bucket: ${{ vars.AWS_TF_BUCKET }}
       aws_endpoint_url_s3: ${{ vars.AWS_ENDPOINT_URL_S3 }}
-      gh_owner: ${{ vars.GH_TF_OWNER }}
-      gh_app_id: ${{ vars.GH_TF_APP_ID }}
-      gh_app_installation_id: ${{ vars.GH_TF_APP_INSTALLATION_ID }}
+      gh_tf_owner: ${{ vars.GH_TF_OWNER }}
+      gh_tf_app_id: ${{ vars.GH_TF_APP_ID }}
+      gh_tf_app_installation_id: ${{ vars.GH_TF_APP_INSTALLATION_ID }}
       path: config.yaml
     secrets:
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      gh_app_pem_file: ${{ secrets.GH_TF_APP_PEM_FILE }}
+      gh_tf_app_pem_file: ${{ secrets.GH_TF_APP_PEM_FILE }}
 ```
 
 Set up GitHub actions, variables and secrets:
