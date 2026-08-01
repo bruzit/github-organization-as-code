@@ -61,6 +61,8 @@ Create the workflow:
 
 ```yaml
 ---
+name: GitHub Organization as Code
+
 on:
   push:
     branches:
@@ -133,15 +135,15 @@ export TF_VAR_config="../test.yaml"
 
 ### Local Usage
 
-Export variables `GITHUB_APP_ID`, `GITHUB_APP_INSTALLATION_ID`, and `GITHUB_APP_PEM_FILE`, or when using direnv set up [`.env`](.env) as shown in the template [`.env.tmpl`](.env.tmpl).
+Export variables `GITHUB_APP_ID`, `GITHUB_APP_INSTALLATION_ID`, and `GITHUB_APP_PEM_FILE`, or when using direnv copy the template [`.env.tmpl`](.env.tmpl) to `.env` and fill it in.
 
 ```shell
 direnv allow
 # direnv: loading ~/bruzit/github-organization-as-code/.envrc
-# direnv: export +AWS_ACCESS_KEY_ID +AWS_ENDPOINT_URL_S3 +AWS_SECRET_ACCESS_KEY +GITHUB_APP_ID +GITHUB_APP_INSTALLATION_ID +GITHUB_APP_PEM_FILE +GITHUB_APP_PEM_FILE_PATH +GITHUB_OWNER +TF_VAR_config
+# direnv: export +AWS_ACCESS_KEY_ID +AWS_BUCKET +AWS_ENDPOINT_URL_S3 +AWS_SECRET_ACCESS_KEY +GITHUB_APP_ID +GITHUB_APP_INSTALLATION_ID +GITHUB_APP_PEM_FILE +GITHUB_APP_PEM_FILE_PATH +GITHUB_OWNER +TF_VAR_config
 
 # Use Terraform as you need
-terraform -chdir=terraform init
+terraform -chdir=terraform init -backend-config="bucket=$AWS_BUCKET"
 terraform -chdir=terraform plan
 terraform -chdir=terraform apply
 ```
