@@ -5,7 +5,7 @@ locals {
 resource "github_repository" "this" {
   for_each = { for repository in local.config.repositories : repository.name => repository }
 
-  name = each.value.name
+  name = each.key
 
   # Metadata
   description  = try(each.value.description, null)
@@ -17,10 +17,7 @@ resource "github_repository" "this" {
 
   # Contents
   dynamic "template" {
-    for_each = (
-      try(each.value.template, null) != null &&
-      length(try(each.value.template, {})) > 0
-    ) ? [each.value.template] : []
+    for_each = try([each.value.template], [])
 
     content {
       owner                = template.value.owner
