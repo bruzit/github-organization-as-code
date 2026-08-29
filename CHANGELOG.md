@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.3](https://github.com/bruzit/github-organization-as-code/compare/v0.5.2...v0.5.3) (2026-08-29)
+
+### Bug Fixes
+
+* pin called-repo checkout to the workflow ref ([07c6068](https://github.com/bruzit/github-organization-as-code/commit/07c606828055f0308f549af4a3f5845c6b0eaf01))
+* **terraform:** archive repository on destroy ([d8fb6eb](https://github.com/bruzit/github-organization-as-code/commit/d8fb6eb8e931dce67c13c45222d5ce03d0443888))
+
 ## [0.5.2](https://github.com/bruzit/github-organization-as-code/compare/v0.5.1...v0.5.2) (2026-07-25)
 
 ## [0.5.1](https://github.com/bruzit/github-organization-as-code/compare/v0.5.0...v0.5.1) (2026-07-24)
