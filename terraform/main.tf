@@ -13,7 +13,8 @@ resource "github_repository" "this" {
   topics       = try(each.value.topics, null)
 
   # Properties
-  is_template = try(each.value.is_template, null)
+  archive_on_destroy = true
+  is_template        = try(each.value.is_template, null)
 
   # Contents
   dynamic "template" {
