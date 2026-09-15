@@ -1,24 +1,37 @@
 locals {
   config = yamldecode(file(var.config))
+
+  repository_defaults = {
+    description  = null
+    homepage_url = null
+    topics       = null
+    is_template  = null
+    template     = null
+  }
+
+  repositories = {
+    for repository in local.config.repositories :
+    repository.name => merge(local.repository_defaults, repository)
+  }
 }
 
 resource "github_repository" "this" {
-  for_each = { for repository in local.config.repositories : repository.name => repository }
+  for_each = local.repositories
 
   name = each.key
 
   # Metadata
-  description  = try(each.value.description, null)
-  homepage_url = try(each.value.homepage_url, null)
-  topics       = try(each.value.topics, null)
+  description  = each.value.description
+  homepage_url = each.value.homepage_url
+  topics       = each.value.topics
 
   # Properties
   archive_on_destroy = true
-  is_template        = try(each.value.is_template, null)
+  is_template        = each.value.is_template
 
   # Contents
   dynamic "template" {
-    for_each = try([each.value.template], [])
+    for_each = each.value.template == null ? [] : [each.value.template]
 
     content {
       owner                = template.value.owner
