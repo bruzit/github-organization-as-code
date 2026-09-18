@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.0](https://github.com/bruzit/github-organization-as-code/compare/v0.5.3...v0.6.0) (2026-09-18)
+
+### Features
+
+* fail plan on unknown organization yaml keys ([ba9e3ae](https://github.com/bruzit/github-organization-as-code/commit/ba9e3ae23b3187f779686717ce64a5e80e7bcfca))
+
 ## [0.5.3](https://github.com/bruzit/github-organization-as-code/compare/v0.5.2...v0.5.3) (2026-08-29)
 
 ### Bug Fixes
