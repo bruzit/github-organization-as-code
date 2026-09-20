@@ -1,12 +1,18 @@
 ---
 repositories:
   - name: .github
-    description: "BruzIT Test organization profile and repository management."
+    description: "BruzIT Test organization profile and the declarative YAML definition of its repositories, reconciled into GitHub by GitHub Organization as Code."
     topics:
+      - github-organization
+      - organization-profile
       - github-profile
       - github-profile-readme
-      - github-organization-profile
-      - github-organization-management
+      - gitops
+      - configuration-as-code
+      - declarative-configuration
+      - iac
+      - terraform
+      - yaml
   - name: template
     description: "Standardized repository scaffold for BruzIT projects. Pre-configured with semantic-release, license boilerplate, README structure, and initial v0.0.0 tag."
     topics:
