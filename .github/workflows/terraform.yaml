@@ -70,6 +70,7 @@ jobs:
         with:
           repository: bruzit/github-organization-as-code
           ref: ${{ steps.workflow-ref.outputs.ref }}
+          persist-credentials: false
       - name: Checkout the caller repository
         if: github.repository != 'bruzit/github-organization-as-code'
         uses: actions/checkout@v7
@@ -77,6 +78,7 @@ jobs:
           path: config
           sparse-checkout: ${{ inputs.path }}
           sparse-checkout-cone-mode: false
+          persist-credentials: false
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v4
         with:
