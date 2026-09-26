@@ -1,0 +1,6 @@
+---
+ENABLE:
+  - ACTION
+  - MARKDOWN
+  - TERRAFORM
+  - YAML
