@@ -62,14 +62,11 @@ jobs:
     name: Terraform Apply
     runs-on: ubuntu-latest
     steps:
-      - name: Resolve workflow ref
-        id: workflow-ref
-        run: echo "ref=${GITHUB_WORKFLOW_REF##*@}" >> "$GITHUB_OUTPUT"
       - name: Checkout the called repository
         uses: actions/checkout@v7
         with:
           repository: bruzit/github-organization-as-code
-          ref: ${{ steps.workflow-ref.outputs.ref }}
+          ref: ${{ job.workflow_sha }}
           persist-credentials: false
       - name: Checkout the caller repository
         if: github.repository != 'bruzit/github-organization-as-code'
