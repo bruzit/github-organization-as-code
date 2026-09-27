@@ -29,8 +29,9 @@ resource "github_repository" "this" {
   topics       = each.value.topics
 
   # Properties
-  archive_on_destroy = true
-  is_template        = each.value.is_template
+  archive_on_destroy     = true
+  delete_branch_on_merge = true
+  is_template            = each.value.is_template
 
   # Contents
   dynamic "template" {

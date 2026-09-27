@@ -130,6 +130,10 @@ repositories:
 
 Removing a repository from the YAML archives it instead of deleting it. Every repository is created with `archive_on_destroy = true`, so `terraform apply` after a removal archives the repository — the live repository is preserved while being removed from the organization's active configuration.
 
+### Branch Cleanup
+
+Every repository is managed with `delete_branch_on_merge = true`, so GitHub deletes a pull request's head branch once it is merged. A deleted branch can be restored from its pull request.
+
 Set it as source of truth:
 
 ```shell
