@@ -86,7 +86,7 @@ jobs:
 
 Set up GitHub actions, variables and secrets:
 
-- GitHub / *Repository* / Settings
+- GitHub / _Repository_ / Settings
   - Secrets and variables / Actions / Actions secrets and variables
     - Secrets
       - **New repository secret**
