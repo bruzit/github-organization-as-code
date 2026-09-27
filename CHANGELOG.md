@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.1](https://github.com/bruzit/github-organization-as-code/compare/v0.6.0...v0.6.1) (2026-09-27)
+
+### Bug Fixes
+
+* check out the reusable workflow's own commit ([cf1bc43](https://github.com/bruzit/github-organization-as-code/commit/cf1bc43e9903c064396ad6095835b301ebe7c3b5))
+
 ## [0.6.0](https://github.com/bruzit/github-organization-as-code/compare/v0.5.3...v0.6.0) (2026-09-18)
 
 ### Features
