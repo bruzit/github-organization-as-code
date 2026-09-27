@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.7.0](https://github.com/bruzit/github-organization-as-code/compare/v0.6.1...v0.7.0) (2026-09-27)
+
+### Features
+
+* delete head branches on merge ([7c2f07c](https://github.com/bruzit/github-organization-as-code/commit/7c2f07c3b54c93d02d510909ef0646a25a8ac175))
+
 ## [0.6.1](https://github.com/bruzit/github-organization-as-code/compare/v0.6.0...v0.6.1) (2026-09-27)
 
 ### Bug Fixes
