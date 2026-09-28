@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.0](https://github.com/bruzit/github-organization-as-code/compare/v0.7.0...v0.8.0) (2026-09-28)
+
+### Features
+
+* make the terraform workflow workflow_call only ([dc488cb](https://github.com/bruzit/github-organization-as-code/commit/dc488cb4d7f092080289887199a570992ac90b26))
+
 ## [0.7.0](https://github.com/bruzit/github-organization-as-code/compare/v0.6.1...v0.7.0) (2026-09-27)
 
 ### Features
