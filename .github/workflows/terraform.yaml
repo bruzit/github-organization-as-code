@@ -2,9 +2,6 @@
 name: Terraform
 
 on:
-  push:
-    branches:
-      - main
   workflow_call:
     inputs:
       aws_bucket:
@@ -42,15 +39,15 @@ permissions:
 
 env:
   # S3 backend configuration
-  AWS_BUCKET: ${{ inputs.aws_bucket || vars.AWS_TF_BUCKET }}
-  AWS_ENDPOINT_URL_S3: ${{ inputs.aws_endpoint_url_s3 || vars.AWS_ENDPOINT_URL_S3 }}
+  AWS_BUCKET: ${{ inputs.aws_bucket }}
+  AWS_ENDPOINT_URL_S3: ${{ inputs.aws_endpoint_url_s3 }}
   # GitHub App configuration
-  GITHUB_OWNER: ${{ inputs.gh_tf_owner || vars.GH_TF_OWNER }}
-  GITHUB_APP_ID: ${{ inputs.gh_tf_app_id || vars.GH_TF_APP_ID }}
-  GITHUB_APP_INSTALLATION_ID: ${{ inputs.gh_tf_app_installation_id || vars.GH_TF_APP_INSTALLATION_ID }}
+  GITHUB_OWNER: ${{ inputs.gh_tf_owner }}
+  GITHUB_APP_ID: ${{ inputs.gh_tf_app_id }}
+  GITHUB_APP_INSTALLATION_ID: ${{ inputs.gh_tf_app_installation_id }}
   # Terraform configuration
-  TF_WORKSPACE: ${{ inputs.gh_tf_owner || vars.GH_TF_OWNER }}
-  TF_VAR_config: ${{ inputs.path && format('../config/{0}', inputs.path) || '../test.yaml' }}
+  TF_WORKSPACE: ${{ inputs.gh_tf_owner }}
+  TF_VAR_config: ../config/${{ inputs.path }}
   TF_IN_AUTOMATION: true
 
 defaults:
@@ -69,7 +66,6 @@ jobs:
           ref: ${{ job.workflow_sha }}
           persist-credentials: false
       - name: Checkout the caller repository
-        if: github.repository != 'bruzit/github-organization-as-code'
         uses: actions/checkout@v7
         with:
           path: config
@@ -86,17 +82,17 @@ jobs:
         id: init
         run: terraform -chdir=terraform init -input=false -backend-config="bucket=$AWS_BUCKET"
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.aws_access_key_id || secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_access_key || secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.aws_access_key_id }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_access_key }}
       - name: Terraform validate
         run: terraform -chdir=terraform validate
         env:
           GITHUB_APP_PEM_FILE: |
-            ${{ secrets.gh_tf_app_pem_file || secrets.GH_TF_APP_PEM_FILE }}
+            ${{ secrets.gh_tf_app_pem_file }}
       - name: Terraform Apply
         run: terraform -chdir=terraform apply -auto-approve -input=false
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.aws_access_key_id || secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_access_key || secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.aws_access_key_id }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.aws_secret_access_key }}
           GITHUB_APP_PEM_FILE: |
-            ${{ secrets.gh_tf_app_pem_file || secrets.GH_TF_APP_PEM_FILE }}
+            ${{ secrets.gh_tf_app_pem_file }}
