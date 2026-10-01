@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.0](https://github.com/bruzit/github-organization-as-code/compare/v0.8.0...v0.9.0) (2026-10-01)
+
+### Features
+
+* add terraform tests for the configuration file ([cafda5a](https://github.com/bruzit/github-organization-as-code/commit/cafda5ae2bdd7373c52ae3be405f0f0f690b4dd6))
+
 ## [0.8.0](https://github.com/bruzit/github-organization-as-code/compare/v0.7.0...v0.8.0) (2026-09-28)
 
 ### Features
