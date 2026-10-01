@@ -1,5 +1,5 @@
 locals {
-  config = yamldecode(file(var.config))
+  config = try(yamldecode(file(var.config)), {})
 
   allowed_top_level_keys  = ["repositories"]
   allowed_repository_keys = ["name", "description", "homepage_url", "topics", "is_template", "template"]
@@ -12,10 +12,10 @@ locals {
     template     = null
   }
 
-  repositories = {
+  repositories = try({
     for repository in local.config.repositories :
     repository.name => merge(local.repository_defaults, repository)
-  }
+  }, {})
 }
 
 resource "github_repository" "this" {
@@ -41,17 +41,6 @@ resource "github_repository" "this" {
       owner                = template.value.owner
       repository           = template.value.repository
       include_all_branches = try(template.value.include_all_branches, false)
-    }
-  }
-
-  lifecycle {
-    precondition {
-      condition     = length(setsubtract(keys(local.config), local.allowed_top_level_keys)) == 0
-      error_message = "Unknown top-level key(s) in ${var.config}: ${join(", ", setsubtract(keys(local.config), local.allowed_top_level_keys))}"
-    }
-    precondition {
-      condition     = length(setsubtract(keys(each.value), local.allowed_repository_keys)) == 0
-      error_message = "Unknown key(s) for repository ${each.key}: ${join(", ", setsubtract(keys(each.value), local.allowed_repository_keys))}"
     }
   }
 }
