@@ -160,6 +160,8 @@ terraform -chdir=terraform apply
 
 Format Terraform configuration by `terraform -chdir=terraform fmt -recursive`.
 
+Test by `terraform -chdir=terraform init -backend=false && terraform -chdir=terraform test`.
+
 ## Copyright and Licensing
 
 [MIT License](LICENSE)  

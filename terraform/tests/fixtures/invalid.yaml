@@ -1,0 +1,4 @@
+---
+repositories:
+  - name: foo
+    description: [unclosed

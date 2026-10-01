@@ -4,3 +4,4 @@ ENABLE:
   - MARKDOWN
   - TERRAFORM
   - YAML
+YAML_FILTER_REGEX_EXCLUDE: "(terraform/tests/fixtures/)"
