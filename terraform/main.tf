@@ -4,43 +4,30 @@ locals {
   allowed_top_level_keys  = ["repositories"]
   allowed_repository_keys = ["name", "description", "homepage_url", "topics", "is_template", "template"]
 
-  repository_defaults = {
-    description  = null
-    homepage_url = null
-    topics       = null
-    is_template  = null
-    template     = null
-  }
-
   repositories = try({
     for repository in local.config.repositories :
-    repository.name => merge(local.repository_defaults, repository)
+    repository.name => repository
   }, {})
 }
 
-resource "github_repository" "this" {
+module "repository" {
+  source   = "./modules/repository"
   for_each = local.repositories
 
-  name = each.key
+  repository = each.value
+}
 
-  # Metadata
-  description  = each.value.description
-  homepage_url = each.value.homepage_url
-  topics       = each.value.topics
+# Keep until every workspace has applied this.
+removed {
+  from = github_repository.this
 
-  # Properties
-  archive_on_destroy     = true
-  delete_branch_on_merge = true
-  is_template            = each.value.is_template
-
-  # Contents
-  dynamic "template" {
-    for_each = each.value.template == null ? [] : [each.value.template]
-
-    content {
-      owner                = template.value.owner
-      repository           = template.value.repository
-      include_all_branches = try(template.value.include_all_branches, false)
-    }
+  lifecycle {
+    destroy = false
   }
+}
+
+import {
+  for_each = local.repositories
+  to       = module.repository[each.key].github_repository.this
+  id       = each.key
 }
