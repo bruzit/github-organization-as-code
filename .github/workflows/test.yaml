@@ -22,12 +22,12 @@ jobs:
       - name: Terraform
         uses: ./
         with:
-          aws-bucket: ${{ vars.AWS_TF_BUCKET }}
-          aws-endpoint-url-s3: ${{ vars.AWS_ENDPOINT_URL_S3 }}
+          path: test.yaml
           owner: ${{ vars.GH_TF_OWNER }}
           app-id: ${{ vars.GH_TF_APP_ID }}
           app-installation-id: ${{ vars.GH_TF_APP_INSTALLATION_ID }}
-          path: test.yaml
+          app-pem-file: ${{ secrets.GH_TF_APP_PEM_FILE }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          app-private-key: ${{ secrets.GH_TF_APP_PEM_FILE }}
+          aws-bucket: ${{ vars.AWS_TF_BUCKET }}
+          aws-endpoint-url-s3: ${{ vars.AWS_ENDPOINT_URL_S3 }}
