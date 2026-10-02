@@ -1,5 +1,26 @@
 mock_provider "github" {}
 
+override_resource {
+  target = module.repository["bar"].github_repository.this
+  values = {
+    id = "bar"
+  }
+}
+
+override_resource {
+  target = module.repository["baz"].github_repository.this
+  values = {
+    id = "baz"
+  }
+}
+
+override_resource {
+  target = module.repository["foo"].github_repository.this
+  values = {
+    id = "foo"
+  }
+}
+
 run "repositories_missing" {
   command = plan
 
@@ -108,7 +129,7 @@ run "one_repository" {
   }
 
   assert {
-    condition     = keys(github_repository.this) == ["foo"]
+    condition     = keys(module.repository) == ["foo"]
     error_message = "Expected repository foo."
   }
 }
@@ -121,7 +142,7 @@ run "several_repositories" {
   }
 
   assert {
-    condition     = keys(github_repository.this) == ["bar", "baz", "foo"]
+    condition     = keys(module.repository) == ["bar", "baz", "foo"]
     error_message = "Expected repositories bar, baz, foo."
   }
 }
