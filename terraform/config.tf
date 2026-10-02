@@ -9,7 +9,7 @@ terraform {
   }
 
   backend "s3" {
-    # bucket is supplied at init time via -backend-config (see .github/workflows/terraform.yaml)
+    # bucket is supplied at init time via -backend-config (see action.yaml)
     workspace_key_prefix = ""
     key                  = "terraform.tfstate"
     use_lockfile         = true # Set to false only for non-AWS S3 compatible APIs without "conditional object PUTs" capability

@@ -1,0 +1,74 @@
+---
+name: GitHub Organization as Code
+description: Apply a GitHub organization YAML configuration with Terraform, authenticated by a GitHub App.
+inputs:
+  aws-bucket:
+    required: true
+    description: S3 bucket name for Terraform state.
+  aws-endpoint-url-s3:
+    required: true
+    description: S3 endpoint URL.
+  owner:
+    required: true
+    description: GitHub organization to manage, also the Terraform workspace.
+  app-id:
+    required: true
+    description: GitHub App ID.
+  app-installation-id:
+    required: true
+    description: GitHub App installation ID.
+  path:
+    required: true
+    description: Organization configuration YAML, relative to the workspace.
+  aws-access-key-id:
+    required: true
+    description: S3 access key ID.
+  aws-secret-access-key:
+    required: true
+    description: S3 secret access key.
+  app-private-key:
+    required: true
+    description: GitHub App private key.
+runs:
+  using: composite
+  steps:
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v4
+    - name: Terraform fmt
+      shell: bash
+      run: terraform -chdir="$GITHUB_ACTION_PATH/terraform" fmt -check
+    - name: Terraform init
+      shell: bash
+      env:
+        AWS_BUCKET: ${{ inputs.aws-bucket }}
+        AWS_ENDPOINT_URL_S3: ${{ inputs.aws-endpoint-url-s3 }}
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+        TF_WORKSPACE: ${{ inputs.owner }}
+        TF_IN_AUTOMATION: true
+      run: terraform -chdir="$GITHUB_ACTION_PATH/terraform" init -input=false -backend-config="bucket=$AWS_BUCKET"
+    - name: Terraform validate
+      shell: bash
+      env:
+        GITHUB_APP_ID: ${{ inputs.app-id }}
+        GITHUB_APP_INSTALLATION_ID: ${{ inputs.app-installation-id }}
+        GITHUB_APP_PEM_FILE: |
+          ${{ inputs.app-private-key }}
+        TF_WORKSPACE: ${{ inputs.owner }}
+        TF_IN_AUTOMATION: true
+      run: terraform -chdir="$GITHUB_ACTION_PATH/terraform" validate
+    - name: Terraform apply
+      shell: bash
+      env:
+        AWS_ENDPOINT_URL_S3: ${{ inputs.aws-endpoint-url-s3 }}
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws-access-key-id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws-secret-access-key }}
+        GITHUB_OWNER: ${{ inputs.owner }}
+        GITHUB_APP_ID: ${{ inputs.app-id }}
+        GITHUB_APP_INSTALLATION_ID: ${{ inputs.app-installation-id }}
+        GITHUB_APP_PEM_FILE: |
+          ${{ inputs.app-private-key }}
+        CONFIG_PATH: ${{ inputs.path }}
+        TF_WORKSPACE: ${{ inputs.owner }}
+        TF_IN_AUTOMATION: true
+      run: TF_VAR_config="$GITHUB_WORKSPACE/$CONFIG_PATH" terraform -chdir="$GITHUB_ACTION_PATH/terraform" apply -auto-approve -input=false

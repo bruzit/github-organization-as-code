@@ -11,17 +11,23 @@ concurrency:
 jobs:
   terraform:
     name: Terraform
-    uses: ./.github/workflows/terraform.yaml
+    runs-on: ubuntu-latest
     permissions:
       contents: read
-    with:
-      aws_bucket: ${{ vars.AWS_TF_BUCKET }}
-      aws_endpoint_url_s3: ${{ vars.AWS_ENDPOINT_URL_S3 }}
-      gh_tf_owner: ${{ vars.GH_TF_OWNER }}
-      gh_tf_app_id: ${{ vars.GH_TF_APP_ID }}
-      gh_tf_app_installation_id: ${{ vars.GH_TF_APP_INSTALLATION_ID }}
-      path: test.yaml
-    secrets:
-      aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      gh_tf_app_pem_file: ${{ secrets.GH_TF_APP_PEM_FILE }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Terraform
+        uses: ./
+        with:
+          aws-bucket: ${{ vars.AWS_TF_BUCKET }}
+          aws-endpoint-url-s3: ${{ vars.AWS_ENDPOINT_URL_S3 }}
+          owner: ${{ vars.GH_TF_OWNER }}
+          app-id: ${{ vars.GH_TF_APP_ID }}
+          app-installation-id: ${{ vars.GH_TF_APP_INSTALLATION_ID }}
+          path: test.yaml
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          app-private-key: ${{ secrets.GH_TF_APP_PEM_FILE }}

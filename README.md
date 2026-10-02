@@ -6,7 +6,7 @@ GitOps workflow turning a declarative YAML organization definition into GitHub r
 
 - **Automated GitHub Organization management** - Define repositories using simple YAML file.
   - **Repository metadata** - Define description, homepage URL, topics.
-- **Reusable GitOps Workflow** - Manage configurations using pull requests and automate updates using GitHub Actions.
+- **GitOps Composite Action** - Manage configurations using pull requests and automate updates using a [composite action](action.yaml).
 - **Terraform** - Uses Terraform under the hood to apply changes efficiently.
 - **Terraform State Management** - Stores Terraform state securely in AWS S3.
 - **GitHub App Integration** - Uses a GitHub App for authentication and API interactions.
@@ -55,9 +55,69 @@ repositories:
   - name: .github
 ```
 
-### GitHub Workflow
+### Use Terraform Action
 
-Create the workflow:
+Create a workflow, for example, `.github/workflows/github-organization-as-code.yaml`:
+
+```yaml
+---
+name: GitHub Organization as Code
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Terraform
+        uses: bruzit/github-organization-as-code@v0
+        with:
+          aws-bucket: ${{ vars.AWS_TF_BUCKET }}
+          aws-endpoint-url-s3: ${{ vars.AWS_ENDPOINT_URL_S3 }}
+          owner: ${{ vars.GH_TF_OWNER }}
+          app-id: ${{ vars.GH_TF_APP_ID }}
+          app-installation-id: ${{ vars.GH_TF_APP_INSTALLATION_ID }}
+          path: config.yaml
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          app-private-key: ${{ secrets.GH_TF_APP_PEM_FILE }}
+```
+
+The [action](action.yaml) runs the Terraform code shipped with the action against the configuration file at `path`, relative to the workspace, so the caller checks out its repository first. It sets up the latest Terraform, checks formatting, initializes the S3 backend in `aws-bucket`, selects the workspace named after `owner`, validates, and applies with `-auto-approve`. `concurrency` queues pushes instead of failing the apply on the state lock.
+
+Set up GitHub actions, variables and secrets:
+
+- GitHub / _Repository_ / Settings
+  - Secrets and variables / Actions / Actions secrets and variables
+    - Secrets
+      - **New repository secret**
+        - `GH_TF_APP_PEM_FILE` (`GITHUB_APP_PEM_FILE_PATH` contents)
+        - `AWS_ACCESS_KEY_ID`
+        - `AWS_SECRET_ACCESS_KEY`
+    - Variables
+      - **New repository variable**
+        - `GH_TF_OWNER` (`GITHUB_OWNER`)
+        - `GH_TF_APP_ID` (`GITHUB_APP_ID`)
+        - `GH_TF_APP_INSTALLATION_ID` (`GITHUB_APP_INSTALLATION_ID`)
+        - `AWS_ENDPOINT_URL_S3`
+        - `AWS_TF_BUCKET` (S3 bucket name for Terraform state)
+
+### Use Terraform Workflow
+
+Similar to [Use Terraform Action](#use-terraform-action), with the reusable workflow:
 
 ```yaml
 ---
@@ -83,23 +143,6 @@ jobs:
       aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       gh_tf_app_pem_file: ${{ secrets.GH_TF_APP_PEM_FILE }}
 ```
-
-Set up GitHub actions, variables and secrets:
-
-- GitHub / _Repository_ / Settings
-  - Secrets and variables / Actions / Actions secrets and variables
-    - Secrets
-      - **New repository secret**
-        - `GH_TF_APP_PEM_FILE` (`GITHUB_APP_PEM_FILE_PATH` contents)
-        - `AWS_ACCESS_KEY_ID`
-        - `AWS_SECRET_ACCESS_KEY`
-    - Variables
-      - **New repository variable**
-        - `GH_TF_OWNER` (`GITHUB_OWNER`)
-        - `GH_TF_APP_ID` (`GITHUB_APP_ID`)
-        - `GH_TF_APP_INSTALLATION_ID` (`GITHUB_APP_INSTALLATION_ID`)
-        - `AWS_ENDPOINT_URL_S3`
-        - `AWS_TF_BUCKET` (S3 bucket name for Terraform state)
 
 ## Usage
 
