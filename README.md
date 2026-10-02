@@ -75,8 +75,6 @@ jobs:
   terraform:
     name: Terraform
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v7
