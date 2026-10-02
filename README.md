@@ -83,15 +83,15 @@ jobs:
       - name: Terraform
         uses: bruzit/github-organization-as-code@v0
         with:
-          aws-bucket: ${{ vars.AWS_TF_BUCKET }}
-          aws-endpoint-url-s3: ${{ vars.AWS_ENDPOINT_URL_S3 }}
+          path: config.yaml
           owner: ${{ vars.GH_TF_OWNER }}
           app-id: ${{ vars.GH_TF_APP_ID }}
           app-installation-id: ${{ vars.GH_TF_APP_INSTALLATION_ID }}
-          path: config.yaml
+          app-pem-file: ${{ secrets.GH_TF_APP_PEM_FILE }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          app-private-key: ${{ secrets.GH_TF_APP_PEM_FILE }}
+          aws-bucket: ${{ vars.AWS_TF_BUCKET }}
+          aws-endpoint-url-s3: ${{ vars.AWS_ENDPOINT_URL_S3 }}
 ```
 
 The [action](action.yaml) runs the Terraform code shipped with the action against the configuration file at `path`, relative to the workspace, so the caller checks out its repository first. It sets up the latest Terraform, checks formatting, initializes the S3 backend in `aws-bucket`, selects the workspace named after `owner`, validates, and applies with `-auto-approve`. `concurrency` queues pushes instead of failing the apply on the state lock.
@@ -130,16 +130,16 @@ jobs:
   call-terraform:
     uses: bruzit/github-organization-as-code/.github/workflows/terraform.yaml@v0
     with:
-      aws_bucket: ${{ vars.AWS_TF_BUCKET }}
-      aws_endpoint_url_s3: ${{ vars.AWS_ENDPOINT_URL_S3 }}
+      path: config.yaml
       gh_tf_owner: ${{ vars.GH_TF_OWNER }}
       gh_tf_app_id: ${{ vars.GH_TF_APP_ID }}
       gh_tf_app_installation_id: ${{ vars.GH_TF_APP_INSTALLATION_ID }}
-      path: config.yaml
+      aws_bucket: ${{ vars.AWS_TF_BUCKET }}
+      aws_endpoint_url_s3: ${{ vars.AWS_ENDPOINT_URL_S3 }}
     secrets:
+      gh_tf_app_pem_file: ${{ secrets.GH_TF_APP_PEM_FILE }}
       aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
       aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      gh_tf_app_pem_file: ${{ secrets.GH_TF_APP_PEM_FILE }}
 ```
 
 ## Usage
