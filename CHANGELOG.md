@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.10.0](https://github.com/bruzit/github-organization-as-code/compare/v0.9.0...v0.10.0) (2026-10-02)
+
+### Features
+
+* add terraform composite action ([116ca1f](https://github.com/bruzit/github-organization-as-code/commit/116ca1f90aed4882449810da0ce500f647bf0360))
+
 ## [0.9.0](https://github.com/bruzit/github-organization-as-code/compare/v0.8.0...v0.9.0) (2026-10-01)
 
 ### Features
