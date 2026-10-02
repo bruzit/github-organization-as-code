@@ -201,7 +201,7 @@ terraform -chdir=terraform apply
 
 Format Terraform configuration by `terraform -chdir=terraform fmt -recursive`.
 
-Test by `terraform -chdir=terraform init -backend=false && terraform -chdir=terraform test`.
+Test by `terraform -chdir=terraform init -backend=false && terraform -chdir=terraform test`, the repository module by `terraform -chdir=terraform/modules/repository init -backend=false && terraform -chdir=terraform/modules/repository test`.
 
 ## Copyright and Licensing
 
