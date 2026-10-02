@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.11.1](https://github.com/bruzit/github-organization-as-code/compare/v0.11.0...v0.11.1) (2026-10-02)
+
+### Bug Fixes
+
+* require a supported terraform version and test 1.15 and 1.16 ([b2b2031](https://github.com/bruzit/github-organization-as-code/commit/b2b2031c9284c48e647f0825ee101dfed59c18ef))
+
 ## [0.11.0](https://github.com/bruzit/github-organization-as-code/compare/v0.10.0...v0.11.0) (2026-10-02)
 
 ### Features
