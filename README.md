@@ -33,6 +33,11 @@ To create a GitHub App and a GitHub App Installation:
     - Webhook
       - Active: off
     - Permissions
+      - Repository permissions
+        - Administration: Read and write
+        - Environments: Read and write
+        - Secrets: Read and write
+        - Variables: Read and write
       - Organization permissions
         - Administration: Read and write
       - Where can this GitHub App be installed?: _choose what suits you best_
