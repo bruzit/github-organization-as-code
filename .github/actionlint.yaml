@@ -1,6 +1,0 @@
----
-paths:
-  .github/workflows/terraform.yaml:
-    ignore:
-      # actionlint 1.7.12 predates GitHub's documented job.workflow_* context properties
-      - 'property "workflow_sha" is not defined'
