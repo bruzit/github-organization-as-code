@@ -1,0 +1,7 @@
+---
+organization:
+  rulesets:
+    default-branch:
+      target: tag
+repositories:
+  - name: foo

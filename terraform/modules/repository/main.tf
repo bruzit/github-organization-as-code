@@ -38,3 +38,38 @@ module "environment" {
   default_branch = data.github_repository.this[0].default_branch
   environment    = merge(each.value, { name = each.key })
 }
+
+resource "github_repository_ruleset" "this" {
+  for_each = var.repository.rulesets
+
+  repository  = github_repository.this.name
+  name        = each.key
+  target      = "branch"
+  enforcement = "active"
+
+  conditions {
+    ref_name {
+      include = ["~DEFAULT_BRANCH"]
+      exclude = []
+    }
+  }
+
+  dynamic "bypass_actors" {
+    for_each = each.value.bypass_apps
+
+    content {
+      actor_id    = bypass_actors.value
+      actor_type  = "Integration"
+      bypass_mode = "always"
+    }
+  }
+
+  rules {
+    deletion         = true
+    non_fast_forward = true
+
+    pull_request {
+      required_approving_review_count = 0
+    }
+  }
+}

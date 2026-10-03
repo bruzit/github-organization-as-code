@@ -7,6 +7,7 @@ GitOps workflow turning a declarative YAML organization definition into GitHub r
 - **Automated GitHub Organization management** - Define repositories using simple YAML file.
   - **Repository metadata** - Define description, homepage URL, topics.
   - **Environments** - Define deployment environments per repository or once for every repository.
+  - **Rulesets** - Protect default branches per repository or once for every repository.
 - **GitOps Composite Action** - Manage configurations using pull requests and automate updates using a [composite action](action.yaml).
 - **Terraform** - Uses Terraform under the hood to apply changes efficiently.
 - **Terraform State Management** - Stores Terraform state securely in AWS S3.
@@ -132,6 +133,10 @@ organization: # OPTIONAL
     release:
       deployment_branches: # OPTIONAL, DEFAULT every branch
         - ~DEFAULT_BRANCH
+  rulesets: # OPTIONAL, DEFAULT none; added to every repository
+    default-branch:
+      bypass_apps: # OPTIONAL, DEFAULT none
+        - 123456
 repositories:
   - name: repo-slug
   # Metadata
@@ -154,6 +159,9 @@ repositories:
         deployment_branches: # OPTIONAL, DEFAULT every branch
           - ~DEFAULT_BRANCH
           - release/*
+    # Rulesets
+    rulesets: # OPTIONAL, DEFAULT none
+      default-branch: ~ # opts out of the organization ruleset
 ```
 
 ### Environments
@@ -163,6 +171,16 @@ repositories:
 `deployment_branches` limits deployments to branches matching the name patterns; without it every branch can deploy. `~DEFAULT_BRANCH` stands for the repository's default branch, resolved by Terraform (GitHub deployment branch policies have no such token). No reviewers or wait timer: a job targeting the environment runs without an approval step. Repository admins cannot bypass environment protection rules.
 
 Environments need the App's repository Administration permission, see [GitHub App](#github-app).
+
+### Rulesets
+
+`organization.rulesets` is added to every repository's `rulesets`, with the same replace, `~` opt-out and repository-only semantics as [environments](#environments).
+
+Every ruleset protects the repository's default branch: changes only through a pull request (no approval required, so a single maintainer can merge their own), no force pushes, no deletion. No required status checks. On the GitHub Free plan, rulesets are available in public repositories only.
+
+`bypass_apps` lists GitHub App IDs that always bypass the ruleset, e.g. a release App pushing a changelog commit to the default branch. Pushes authenticated by `GITHUB_TOKEN` cannot bypass: a repository releasing with `GITHUB_TOKEN` must opt out.
+
+Rulesets need the App's repository Administration permission, see [GitHub App](#github-app).
 
 ### Removal Safety
 

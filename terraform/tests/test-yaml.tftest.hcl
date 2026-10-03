@@ -57,4 +57,9 @@ run "test_yaml" {
     condition     = module.repository["template"].environments["release"].deployment_policies["~DEFAULT_BRANCH"].branch_pattern == "main"
     error_message = "Unexpected template release branch policy."
   }
+
+  assert {
+    condition     = alltrue([for m in module.repository : keys(m.rulesets) == ["default-branch"] && [for a in m.rulesets["default-branch"].bypass_actors : a.actor_id] == [3144447]])
+    error_message = "Expected the default-branch ruleset with the semantic-release App bypass in every repository."
+  }
 }

@@ -2,11 +2,13 @@ locals {
   config = try(yamldecode(file(var.config)), {})
 
   allowed_top_level_keys    = ["organization", "repositories"]
-  allowed_organization_keys = ["environments"]
-  allowed_repository_keys   = ["name", "description", "homepage_url", "topics", "is_template", "template", "environments"]
+  allowed_organization_keys = ["environments", "rulesets"]
+  allowed_repository_keys   = ["name", "description", "homepage_url", "topics", "is_template", "template", "environments", "rulesets"]
   allowed_environment_keys  = ["deployment_branches"]
+  allowed_ruleset_keys      = ["bypass_apps"]
 
   organization_environments = try({ for name, environment in local.config.organization.environments : name => environment }, {})
+  organization_rulesets     = try({ for name, ruleset in local.config.organization.rulesets : name => ruleset }, {})
 
   repositories = try({
     for repository in local.config.repositories :
@@ -14,6 +16,10 @@ locals {
       environments = {
         for name, environment in merge(local.organization_environments, try({ for name, environment in repository.environments : name => environment }, {})) :
         name => environment if environment != null
+      }
+      rulesets = {
+        for name, ruleset in merge(local.organization_rulesets, try({ for name, ruleset in repository.rulesets : name => ruleset }, {})) :
+        name => ruleset if ruleset != null
       }
     })
   }, {})

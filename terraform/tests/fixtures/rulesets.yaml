@@ -1,0 +1,20 @@
+---
+organization:
+  rulesets:
+    default-branch:
+      bypass_apps:
+        - 3144447
+    other: {}
+repositories:
+  - name: inherit
+  - name: override
+    rulesets:
+      default-branch: {}
+  - name: opt-out
+    rulesets:
+      default-branch: ~
+  - name: repository-only
+    rulesets:
+      extra:
+        bypass_apps:
+          - 42
