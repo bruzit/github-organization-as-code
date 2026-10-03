@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.14.0](https://github.com/bruzit/github-organization-as-code/compare/v0.13.0...v0.14.0) (2026-10-03)
+
+### Features
+
+* protect default branches with rulesets fanned out from the organization ([ca06fa6](https://github.com/bruzit/github-organization-as-code/commit/ca06fa6c8e3a8682aff58049dc36c598fea7662b))
+
 ## [0.13.0](https://github.com/bruzit/github-organization-as-code/compare/v0.12.0...v0.13.0) (2026-10-03)
 
 ### Features
