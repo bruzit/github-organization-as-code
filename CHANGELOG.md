@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.13.0](https://github.com/bruzit/github-organization-as-code/compare/v0.12.0...v0.13.0) (2026-10-03)
+
+### Features
+
+* manage github environments with an organization-level fan-out ([3218a10](https://github.com/bruzit/github-organization-as-code/commit/3218a10d1c532fae565b4a5231209d834021e52c))
+
 ## [0.12.0](https://github.com/bruzit/github-organization-as-code/compare/v0.11.2...v0.12.0) (2026-10-03)
 
 ### ⚠ BREAKING CHANGES
