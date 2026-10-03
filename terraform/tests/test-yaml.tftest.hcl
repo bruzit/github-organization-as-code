@@ -1,26 +1,5 @@
 mock_provider "github" {}
 
-override_resource {
-  target = module.repository[".github"].github_repository.this
-  values = {
-    id = ".github"
-  }
-}
-
-override_resource {
-  target = module.repository["template"].github_repository.this
-  values = {
-    id = "template"
-  }
-}
-
-override_resource {
-  target = module.repository["template-use"].github_repository.this
-  values = {
-    id = "template-use"
-  }
-}
-
 run "test_yaml" {
   command = plan
 
@@ -56,18 +35,5 @@ run "test_yaml" {
   assert {
     condition     = alltrue([for m in module.repository : m.repository.archive_on_destroy && m.repository.delete_branch_on_merge])
     error_message = "Every repository must archive on destroy and delete branches on merge."
-  }
-}
-
-run "test_yaml_import" {
-  command = plan
-
-  variables {
-    config = "../test.yaml"
-  }
-
-  assert {
-    condition     = alltrue([for k, m in module.repository : m.repository.id == k])
-    error_message = "Every repository must be imported, not created."
   }
 }

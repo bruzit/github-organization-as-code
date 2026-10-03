@@ -16,18 +16,3 @@ module "repository" {
 
   repository = each.value
 }
-
-# Keep until every workspace has applied this.
-removed {
-  from = github_repository.this
-
-  lifecycle {
-    destroy = false
-  }
-}
-
-import {
-  for_each = local.repositories
-  to       = module.repository[each.key].github_repository.this
-  id       = each.key
-}
