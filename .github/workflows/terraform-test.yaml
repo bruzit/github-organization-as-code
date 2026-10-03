@@ -61,3 +61,7 @@ jobs:
         run: terraform -chdir=terraform/modules/repository init -backend=false
       - name: Terraform test repository module
         run: terraform -chdir=terraform/modules/repository test
+      - name: Terraform init environment module
+        run: terraform -chdir=terraform/modules/environment init -backend=false
+      - name: Terraform test environment module
+        run: terraform -chdir=terraform/modules/environment test

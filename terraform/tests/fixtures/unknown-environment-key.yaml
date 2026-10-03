@@ -1,0 +1,6 @@
+---
+repositories:
+  - name: foo
+    environments:
+      release:
+        unknown: true

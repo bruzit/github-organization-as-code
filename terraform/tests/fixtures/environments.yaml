@@ -1,0 +1,20 @@
+---
+organization:
+  environments:
+    release:
+      deployment_branches:
+        - ~DEFAULT_BRANCH
+    staging: {}
+repositories:
+  - name: inherit
+  - name: override
+    environments:
+      release: {}
+  - name: opt-out
+    environments:
+      release: ~
+  - name: repository-only
+    environments:
+      production:
+        deployment_branches:
+          - ~DEFAULT_BRANCH

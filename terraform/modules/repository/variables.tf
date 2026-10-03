@@ -10,6 +10,9 @@ variable "repository" {
       repository           = string
       include_all_branches = optional(bool, false)
     }))
+    environments = optional(map(object({
+      deployment_branches = optional(list(string))
+    })), {})
   })
   description = "Repository configuration"
   validation {

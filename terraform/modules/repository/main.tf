@@ -22,3 +22,19 @@ resource "github_repository" "this" {
     }
   }
 }
+
+# github_repository.default_branch is deprecated.
+data "github_repository" "this" {
+  count = length(var.repository.environments) > 0 ? 1 : 0
+
+  name = github_repository.this.name
+}
+
+module "environment" {
+  source   = "../environment"
+  for_each = var.repository.environments
+
+  repository     = github_repository.this.name
+  default_branch = data.github_repository.this[0].default_branch
+  environment    = merge(each.value, { name = each.key })
+}

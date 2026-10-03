@@ -33,4 +33,12 @@ variable "config" {
     condition     = try(alltrue([for r in concat(yamldecode(file(var.config)).repositories, []) : length(setsubtract(keys(r), local.allowed_repository_keys)) == 0]), true)
     error_message = "Unknown repository key(s) in ${var.config}: ${try(join(", ", flatten([for r in concat(yamldecode(file(var.config)).repositories, []) : [for k in setsubtract(keys(r), local.allowed_repository_keys) : "${r.name}.${k}"]])), "")}"
   }
+  validation {
+    condition     = try(yamldecode(file(var.config)).organization == null, true) || try(length(setsubtract(keys(yamldecode(file(var.config)).organization), local.allowed_organization_keys)) == 0, false)
+    error_message = "File ${var.config}: organization must be a map with key(s) ${join(", ", local.allowed_organization_keys)}; unknown: ${try(join(", ", setsubtract(keys(yamldecode(file(var.config)).organization), local.allowed_organization_keys)), "")}"
+  }
+  validation {
+    condition     = try(length(flatten([for s in concat([{ label = "organization", environments = try(yamldecode(file(var.config)).organization.environments, null), opt_out = false }], [for r in yamldecode(file(var.config)).repositories : { label = r.name, environments = try(r.environments, null), opt_out = true }]) : s.environments == null ? [] : !can(keys(s.environments)) ? ["${s.label}.environments"] : [for n, e in s.environments : "${s.label}.environments.${n}" if !(s.opt_out && e == null) && !try(length(setsubtract(keys(e), local.allowed_environment_keys)) == 0, false)]])) == 0, true)
+    error_message = "Invalid environment(s) in ${var.config}: ${try(join(", ", flatten([for s in concat([{ label = "organization", environments = try(yamldecode(file(var.config)).organization.environments, null), opt_out = false }], [for r in yamldecode(file(var.config)).repositories : { label = r.name, environments = try(r.environments, null), opt_out = true }]) : s.environments == null ? [] : !can(keys(s.environments)) ? ["${s.label}.environments"] : [for n, e in s.environments : "${s.label}.environments.${n}" if !(s.opt_out && e == null) && !try(length(setsubtract(keys(e), local.allowed_environment_keys)) == 0, false)]])), "")}; each must be a map of ${join(", ", local.allowed_environment_keys)}, or ~ under a repository to opt out of an organization environment."
+  }
 }
