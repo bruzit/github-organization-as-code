@@ -113,35 +113,6 @@ Set up GitHub actions, variables and secrets:
         - `AWS_ENDPOINT_URL_S3`
         - `AWS_TF_BUCKET` (S3 bucket name for Terraform state)
 
-### Use Terraform Workflow
-
-Similar to [Use Terraform Action](#use-terraform-action), with the reusable workflow:
-
-```yaml
----
-name: GitHub Organization as Code
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  call-terraform:
-    uses: bruzit/github-organization-as-code/.github/workflows/terraform.yaml@v0
-    with:
-      path: config.yaml
-      gh_tf_owner: ${{ vars.GH_TF_OWNER }}
-      gh_tf_app_id: ${{ vars.GH_TF_APP_ID }}
-      gh_tf_app_installation_id: ${{ vars.GH_TF_APP_INSTALLATION_ID }}
-      aws_bucket: ${{ vars.AWS_TF_BUCKET }}
-      aws_endpoint_url_s3: ${{ vars.AWS_ENDPOINT_URL_S3 }}
-    secrets:
-      gh_tf_app_pem_file: ${{ secrets.GH_TF_APP_PEM_FILE }}
-      aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-```
-
 ## Usage
 
 ### GitHub Organization Configuration YAML
