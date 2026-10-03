@@ -1,0 +1,6 @@
+---
+organization:
+  environments:
+    release: ~
+repositories:
+  - name: foo

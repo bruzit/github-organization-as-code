@@ -1,7 +1,13 @@
-mock_provider "github" {}
+mock_provider "github" {
+  mock_data "github_repository" {
+    defaults = {
+      default_branch = "main"
+    }
+  }
+}
 
 run "test_yaml" {
-  command = plan
+  command = apply
 
   variables {
     config = "../test.yaml"
@@ -35,5 +41,20 @@ run "test_yaml" {
   assert {
     condition     = alltrue([for m in module.repository : m.repository.archive_on_destroy && m.repository.delete_branch_on_merge])
     error_message = "Every repository must archive on destroy and delete branches on merge."
+  }
+
+  assert {
+    condition     = keys(module.repository[".github"].environments) == ["production", "release"] && keys(module.repository["template"].environments) == ["release"] && length(module.repository["template-use"].environments) == 0
+    error_message = "Expected .github production and release, template release, template-use none."
+  }
+
+  assert {
+    condition     = length(module.repository[".github"].environments["production"].environment.deployment_branch_policy) == 1 && module.repository[".github"].environments["production"].deployment_policies["~DEFAULT_BRANCH"].branch_pattern == "main"
+    error_message = "Unexpected .github production branch policy."
+  }
+
+  assert {
+    condition     = module.repository["template"].environments["release"].deployment_policies["~DEFAULT_BRANCH"].branch_pattern == "main"
+    error_message = "Unexpected template release branch policy."
   }
 }

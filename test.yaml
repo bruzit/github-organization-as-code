@@ -1,4 +1,9 @@
 ---
+organization:
+  environments:
+    release:
+      deployment_branches:
+        - ~DEFAULT_BRANCH
 repositories:
   - name: .github
     description: "BruzIT Test organization profile and the declarative YAML definition of its repositories, reconciled into GitHub by GitHub Organization as Code."
@@ -13,6 +18,10 @@ repositories:
       - iac
       - terraform
       - yaml
+    environments:
+      production:
+        deployment_branches:
+          - ~DEFAULT_BRANCH
   - name: template
     description: "Standardized repository scaffold for BruzIT projects. Pre-configured with semantic-release, license boilerplate, README structure, and initial v0.0.0 tag."
     topics:
@@ -22,3 +31,5 @@ repositories:
     template:
       owner: bruzit-test
       repository: template
+    environments:
+      release: ~

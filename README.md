@@ -6,6 +6,7 @@ GitOps workflow turning a declarative YAML organization definition into GitHub r
 
 - **Automated GitHub Organization management** - Define repositories using simple YAML file.
   - **Repository metadata** - Define description, homepage URL, topics.
+  - **Environments** - Define deployment environments per repository or once for every repository.
 - **GitOps Composite Action** - Manage configurations using pull requests and automate updates using a [composite action](action.yaml).
 - **Terraform** - Uses Terraform under the hood to apply changes efficiently.
 - **Terraform State Management** - Stores Terraform state securely in AWS S3.
@@ -126,6 +127,11 @@ Create the configuration file:
 
 ```yaml
 ---
+organization: # OPTIONAL
+  environments: # OPTIONAL, DEFAULT none; added to every repository
+    release:
+      deployment_branches: # OPTIONAL, DEFAULT every branch
+        - ~DEFAULT_BRANCH
 repositories:
   - name: repo-slug
   # Metadata
@@ -141,7 +147,22 @@ repositories:
       owner: bruzit
       repository: template
       include_all_branches: true # OPTIONAL, DEFAULT false
+    # Environments
+    environments: # OPTIONAL, DEFAULT none
+      release: ~ # opts out of the organization environment
+      production:
+        deployment_branches: # OPTIONAL, DEFAULT every branch
+          - ~DEFAULT_BRANCH
+          - release/*
 ```
+
+### Environments
+
+`organization.environments` is added to every repository's `environments`. A repository environment of the same name replaces the organization one wholesale (no key-level merge), `~` opts the repository out of it, other names are repository-only.
+
+`deployment_branches` limits deployments to branches matching the name patterns; without it every branch can deploy. `~DEFAULT_BRANCH` stands for the repository's default branch, resolved by Terraform (GitHub deployment branch policies have no such token). No reviewers or wait timer: a job targeting the environment runs without an approval step. Repository admins cannot bypass environment protection rules.
+
+Environments need the App's repository Administration permission, see [GitHub App](#github-app).
 
 ### Removal Safety
 
@@ -177,7 +198,7 @@ terraform -chdir=terraform apply
 
 Format Terraform configuration by `terraform -chdir=terraform fmt -recursive`.
 
-Test by `terraform -chdir=terraform init -backend=false && terraform -chdir=terraform test`, the repository module by `terraform -chdir=terraform/modules/repository init -backend=false && terraform -chdir=terraform/modules/repository test`.
+Test by `terraform -chdir=terraform init -backend=false && terraform -chdir=terraform test`, the repository module by `terraform -chdir=terraform/modules/repository init -backend=false && terraform -chdir=terraform/modules/repository test`, the environment module likewise in `terraform/modules/environment`.
 
 ## Copyright and Licensing
 

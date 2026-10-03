@@ -1,0 +1,7 @@
+---
+organization:
+  environments:
+    release:
+      can_admins_bypass: true
+repositories:
+  - name: foo
