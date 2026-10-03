@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.12.0](https://github.com/bruzit/github-organization-as-code/compare/v0.11.2...v0.12.0) (2026-10-03)
+
+### ⚠ BREAKING CHANGES
+
+* remove the reusable terraform workflow
+
+### Features
+
+* remove the reusable terraform workflow ([e55443c](https://github.com/bruzit/github-organization-as-code/commit/e55443c31dcc4808b1b2931b072a71c4fdb5c0f1))
+
 ## [0.11.2](https://github.com/bruzit/github-organization-as-code/compare/v0.11.1...v0.11.2) (2026-10-03)
 
 ### Bug Fixes
