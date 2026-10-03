@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.11.2](https://github.com/bruzit/github-organization-as-code/compare/v0.11.1...v0.11.2) (2026-10-03)
+
+### Bug Fixes
+
+* drop the repository migration blocks ([fa900cd](https://github.com/bruzit/github-organization-as-code/commit/fa900cde7d0e1c45c20446f0d67047a85d3a38f2))
+
 ## [0.11.1](https://github.com/bruzit/github-organization-as-code/compare/v0.11.0...v0.11.1) (2026-10-02)
 
 ### Bug Fixes
