@@ -481,3 +481,130 @@ run "template_repository_empty" {
 
   expect_failures = [var.repository]
 }
+
+run "rulesets_none" {
+  command = plan
+
+  variables {
+    repository = {
+      name = "foo"
+    }
+  }
+
+  assert {
+    condition     = length(github_repository_ruleset.this) == 0
+    error_message = "Expected no rulesets."
+  }
+}
+
+run "ruleset" {
+  command = plan
+
+  variables {
+    repository = {
+      name     = "foo"
+      rulesets = { default-branch = { bypass_apps = [3144447, 42] } }
+    }
+  }
+
+  assert {
+    condition     = github_repository_ruleset.this["default-branch"].repository == "foo" && github_repository_ruleset.this["default-branch"].name == "default-branch"
+    error_message = "Unexpected repository or ruleset name."
+  }
+
+  assert {
+    condition     = github_repository_ruleset.this["default-branch"].target == "branch" && github_repository_ruleset.this["default-branch"].enforcement == "active"
+    error_message = "Expected an active branch ruleset."
+  }
+
+  assert {
+    condition     = github_repository_ruleset.this["default-branch"].conditions[0].ref_name[0].include == tolist(["~DEFAULT_BRANCH"]) && length(github_repository_ruleset.this["default-branch"].conditions[0].ref_name[0].exclude) == 0
+    error_message = "Expected the default branch only."
+  }
+
+  assert {
+    condition     = github_repository_ruleset.this["default-branch"].rules[0].deletion && github_repository_ruleset.this["default-branch"].rules[0].non_fast_forward
+    error_message = "Expected deletion and force push blocked."
+  }
+
+  assert {
+    condition     = github_repository_ruleset.this["default-branch"].rules[0].pull_request[0].required_approving_review_count == 0 && length(github_repository_ruleset.this["default-branch"].rules[0].required_status_checks) == 0
+    error_message = "Expected a pull request with no approvals and no status checks."
+  }
+
+  assert {
+    condition     = [for a in github_repository_ruleset.this["default-branch"].bypass_actors : a.actor_id] == [3144447, 42] && alltrue([for a in github_repository_ruleset.this["default-branch"].bypass_actors : a.actor_type == "Integration" && a.bypass_mode == "always"])
+    error_message = "Expected the Apps to always bypass."
+  }
+}
+
+run "ruleset_bypass_apps_absent" {
+  command = plan
+
+  variables {
+    repository = {
+      name     = "foo"
+      rulesets = { default-branch = {} }
+    }
+  }
+
+  assert {
+    condition     = length(github_repository_ruleset.this["default-branch"].bypass_actors) == 0
+    error_message = "Expected no bypass actors."
+  }
+}
+
+run "ruleset_bypass_apps_empty" {
+  command = plan
+
+  variables {
+    repository = {
+      name     = "foo"
+      rulesets = { default-branch = { bypass_apps = [] } }
+    }
+  }
+
+  assert {
+    condition     = length(github_repository_ruleset.this["default-branch"].bypass_actors) == 0
+    error_message = "Expected no bypass actors."
+  }
+}
+
+run "ruleset_bypass_apps_fraction" {
+  command = plan
+
+  variables {
+    repository = {
+      name     = "foo"
+      rulesets = { default-branch = { bypass_apps = [1.5] } }
+    }
+  }
+
+  expect_failures = [var.repository]
+}
+
+run "ruleset_bypass_apps_zero" {
+  command = plan
+
+  variables {
+    repository = {
+      name     = "foo"
+      rulesets = { default-branch = { bypass_apps = [0] } }
+    }
+  }
+
+  expect_failures = [var.repository]
+}
+
+run "ruleset_bypass_apps_duplicate" {
+  command = plan
+
+  variables {
+    repository = {
+      name     = "foo"
+      rulesets = { default-branch = { bypass_apps = [42, 42] } }
+    }
+  }
+
+  expect_failures = [var.repository]
+}

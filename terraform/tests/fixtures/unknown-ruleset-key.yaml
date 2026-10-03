@@ -1,0 +1,6 @@
+---
+repositories:
+  - name: foo
+    rulesets:
+      default-branch:
+        enforcement: evaluate

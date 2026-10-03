@@ -13,6 +13,9 @@ variable "repository" {
     environments = optional(map(object({
       deployment_branches = optional(list(string))
     })), {})
+    rulesets = optional(map(object({
+      bypass_apps = optional(list(number), [])
+    })), {})
   })
   description = "Repository configuration"
   validation {
@@ -38,5 +41,9 @@ variable "repository" {
   validation {
     condition     = try(var.repository.template == null ? true : trimspace(var.repository.template.owner) != "" && trimspace(var.repository.template.repository) != "", false)
     error_message = "Repository ${try(coalesce(var.repository.name), "")}: template owner and repository must be non-empty."
+  }
+  validation {
+    condition     = try(alltrue([for r in values(var.repository.rulesets) : alltrue([for id in r.bypass_apps : id > 0 && floor(id) == id]) && length(distinct(r.bypass_apps)) == length(r.bypass_apps)]), false)
+    error_message = "Repository ${try(coalesce(var.repository.name), "")}: ruleset bypass_apps must be distinct GitHub App IDs (positive integers)."
   }
 }

@@ -1,0 +1,6 @@
+---
+organization:
+  rulesets:
+    default-branch: ~
+repositories:
+  - name: foo
