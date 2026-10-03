@@ -45,7 +45,7 @@ To create a GitHub App and a GitHub App Installation:
 
 ### GitHub Organization as Code
 
-Create GitHub organization YAML configuration file. See [GitHub Organization YAML](#github-organization-yaml) below.
+Create GitHub organization YAML configuration file. See [GitHub Organization Configuration YAML](#github-organization-configuration-yaml) below.
 
 For example, `config.yaml`:
 
