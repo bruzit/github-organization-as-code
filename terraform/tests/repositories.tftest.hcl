@@ -1,26 +1,5 @@
 mock_provider "github" {}
 
-override_resource {
-  target = module.repository["bar"].github_repository.this
-  values = {
-    id = "bar"
-  }
-}
-
-override_resource {
-  target = module.repository["baz"].github_repository.this
-  values = {
-    id = "baz"
-  }
-}
-
-override_resource {
-  target = module.repository["foo"].github_repository.this
-  values = {
-    id = "foo"
-  }
-}
-
 run "repositories_missing" {
   command = plan
 
