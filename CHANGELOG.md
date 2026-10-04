@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.16.0](https://github.com/bruzit/github-organization-as-code/compare/v0.15.0...v0.16.0) (2026-10-04)
+
+### Features
+
+* plan pull requests with the read-only app ([4eeeda5](https://github.com/bruzit/github-organization-as-code/commit/4eeeda54334cae56593da4daa7c78d0d23a36f6d))
+
 ## [0.15.0](https://github.com/bruzit/github-organization-as-code/compare/v0.14.0...v0.15.0) (2026-10-04)
 
 ### Features
