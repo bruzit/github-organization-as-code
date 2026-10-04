@@ -104,7 +104,7 @@ jobs:
 
 The [action](action.yaml) runs the Terraform code shipped with the action against the configuration file at `path`, relative to the workspace, so the caller checks out its repository first. It sets up the latest Terraform, checks formatting, initializes the S3 backend in `aws-bucket`, selects the workspace named after `owner`, validates, and applies with `-auto-approve`. `concurrency` queues pushes instead of failing the apply on the state lock.
 
-`mode: plan` runs `terraform plan -lock=false` instead of the apply, for pull requests with read-only credentials (a read-only S3 key cannot write the state lock).
+`mode: plan` runs `terraform plan -lock=false -refresh=false` instead of the apply, for pull requests with read-only credentials (a read-only S3 key cannot write the state lock); no refresh, it compares against the last applied state.
 
 Set up GitHub actions, variables and secrets:
 

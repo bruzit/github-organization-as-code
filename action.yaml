@@ -79,7 +79,8 @@ runs:
       run: |
         case "$MODE" in
           apply) args=(apply -auto-approve) ;;
-          plan) args=(plan -lock=false) ;;
+          # Read-only App can't see merge settings or bypass actors
+          plan) args=(plan -lock=false -refresh=false) ;;
           *) echo "::error::mode must be apply or plan, got: $MODE"; exit 1 ;;
         esac
         TF_VAR_config="$GITHUB_WORKSPACE/$CONFIG_PATH" terraform -chdir="$GITHUB_ACTION_PATH/terraform" "${args[@]}" -input=false
