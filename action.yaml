@@ -29,6 +29,10 @@ inputs:
   aws-endpoint-url-s3:
     required: true
     description: S3 endpoint URL.
+  mode:
+    required: false
+    default: apply
+    description: apply or plan.
 runs:
   using: composite
   steps:
@@ -57,9 +61,10 @@ runs:
         TF_WORKSPACE: ${{ inputs.owner }}
         TF_IN_AUTOMATION: true
       run: terraform -chdir="$GITHUB_ACTION_PATH/terraform" validate
-    - name: Terraform apply
+    - name: Terraform ${{ inputs.mode }}
       shell: bash
       env:
+        MODE: ${{ inputs.mode }}
         CONFIG_PATH: ${{ inputs.path }}
         GITHUB_OWNER: ${{ inputs.owner }}
         GITHUB_APP_ID: ${{ inputs.app-id }}
@@ -71,4 +76,10 @@ runs:
         AWS_ENDPOINT_URL_S3: ${{ inputs.aws-endpoint-url-s3 }}
         TF_WORKSPACE: ${{ inputs.owner }}
         TF_IN_AUTOMATION: true
-      run: TF_VAR_config="$GITHUB_WORKSPACE/$CONFIG_PATH" terraform -chdir="$GITHUB_ACTION_PATH/terraform" apply -auto-approve -input=false
+      run: |
+        case "$MODE" in
+          apply) args=(apply -auto-approve) ;;
+          plan) args=(plan -lock=false) ;;
+          *) echo "::error::mode must be apply or plan, got: $MODE"; exit 1 ;;
+        esac
+        TF_VAR_config="$GITHUB_WORKSPACE/$CONFIG_PATH" terraform -chdir="$GITHUB_ACTION_PATH/terraform" "${args[@]}" -input=false
