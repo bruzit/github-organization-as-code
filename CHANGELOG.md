@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.16.1](https://github.com/bruzit/github-organization-as-code/compare/v0.16.0...v0.16.1) (2026-10-04)
+
+### Bug Fixes
+
+* plan without refreshing the state ([fd7e2e9](https://github.com/bruzit/github-organization-as-code/commit/fd7e2e9a32654a7a91ebaebe81bde7610df9ef0b))
+
 ## [0.16.0](https://github.com/bruzit/github-organization-as-code/compare/v0.15.0...v0.16.0) (2026-10-04)
 
 ### Features
