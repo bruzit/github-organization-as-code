@@ -54,6 +54,11 @@ run "test_yaml" {
   }
 
   assert {
+    condition     = module.repository[".github"].environments["production"].variables["EXAMPLE"].value == "example" && keys(module.repository[".github"].environments["production"].secrets) == ["EXAMPLE_SECRET"] && length(module.repository[".github"].environments["release"].variables) == 0 && length(module.repository[".github"].environments["release"].secrets) == 0
+    error_message = "Expected .github production variable EXAMPLE and secret EXAMPLE_SECRET only."
+  }
+
+  assert {
     condition     = module.repository["template"].environments["release"].deployment_policies["~DEFAULT_BRANCH"].branch_pattern == "main"
     error_message = "Unexpected template release branch policy."
   }

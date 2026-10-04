@@ -7,6 +7,7 @@ GitOps workflow turning a declarative YAML organization definition into GitHub r
 - **Automated GitHub Organization management** - Define repositories using simple YAML file.
   - **Repository metadata** - Define description, homepage URL, topics.
   - **Environments** - Define deployment environments per repository or once for every repository.
+    - **Variables and secrets** - Define environment variables and secret placeholders.
   - **Rulesets** - Protect default branches per repository or once for every repository.
 - **GitOps Composite Action** - Manage configurations using pull requests and automate updates using a [composite action](action.yaml).
 - **Terraform** - Uses Terraform under the hood to apply changes efficiently.
@@ -133,6 +134,10 @@ organization: # OPTIONAL
     release:
       deployment_branches: # OPTIONAL, DEFAULT every branch
         - ~DEFAULT_BRANCH
+      variables: # OPTIONAL, DEFAULT none
+        APP_ID: "123456"
+      secrets: # OPTIONAL, DEFAULT none; names only
+        - APP_PEM_FILE
   rulesets: # OPTIONAL, DEFAULT none; added to every repository
     default-branch:
       bypass_apps: # OPTIONAL, DEFAULT none
@@ -170,7 +175,17 @@ repositories:
 
 `deployment_branches` limits deployments to branches matching the name patterns; without it every branch can deploy. `~DEFAULT_BRANCH` stands for the repository's default branch, resolved by Terraform (GitHub deployment branch policies have no such token). No reviewers or wait timer: a job targeting the environment runs without an approval step. Repository admins cannot bypass environment protection rules.
 
-Environments need the App's repository Administration permission, see [GitHub App](#github-app).
+`variables` maps variable names to values, managed by Terraform: a value changed by hand is reverted on the next apply.
+
+`secrets` lists secret names only; values never come from the YAML. Terraform creates each secret with the placeholder value `set-by-hand` and never updates it, so set the real value by hand, before any job uses the environment:
+
+```shell
+gh secret set NAME --env ENVIRONMENT --repo OWNER/REPOSITORY
+```
+
+Variable and secret names: A-Z, a-z, 0-9, `_`, not starting with a digit or `GITHUB_`, unique per environment case-insensitively. A job sees them only with `environment: ENVIRONMENT`; they take precedence over repository and organization variables and secrets of the same name.
+
+Environments need the App's repository Administration permission, variables and secrets its Environments, Variables and Secrets permissions, see [GitHub App](#github-app).
 
 ### Rulesets
 

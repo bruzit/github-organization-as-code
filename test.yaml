@@ -26,6 +26,10 @@ repositories:
       production:
         deployment_branches:
           - ~DEFAULT_BRANCH
+        variables:
+          EXAMPLE: example
+        secrets:
+          - EXAMPLE_SECRET
   - name: template
     description: "Standardized repository scaffold for BruzIT projects. Pre-configured with semantic-release, license boilerplate, README structure, and initial v0.0.0 tag."
     topics:

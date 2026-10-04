@@ -4,7 +4,7 @@ locals {
   allowed_top_level_keys    = ["organization", "repositories"]
   allowed_organization_keys = ["environments", "rulesets"]
   allowed_repository_keys   = ["name", "description", "homepage_url", "topics", "is_template", "template", "environments", "rulesets"]
-  allowed_environment_keys  = ["deployment_branches"]
+  allowed_environment_keys  = ["deployment_branches", "variables", "secrets"]
   allowed_ruleset_keys      = ["bypass_apps"]
 
   organization_environments = try({ for name, environment in local.config.organization.environments : name => environment }, {})
