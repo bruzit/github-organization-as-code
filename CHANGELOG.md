@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.15.0](https://github.com/bruzit/github-organization-as-code/compare/v0.14.0...v0.15.0) (2026-10-04)
+
+### Features
+
+* manage environment variables and secret placeholders ([48acedd](https://github.com/bruzit/github-organization-as-code/commit/48acedddc3a7fa8b705ce5c8c59c2ab72f024027))
+
 ## [0.14.0](https://github.com/bruzit/github-organization-as-code/compare/v0.13.0...v0.14.0) (2026-10-03)
 
 ### Features
