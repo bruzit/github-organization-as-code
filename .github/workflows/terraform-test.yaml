@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   gate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       run: ${{ steps.check.outputs.run }}
     steps:
@@ -37,7 +37,7 @@ jobs:
     name: Terraform Test (${{ matrix.terraform }})
     needs: gate
     if: needs.gate.outputs.run == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     strategy:
       fail-fast: false
       matrix:
