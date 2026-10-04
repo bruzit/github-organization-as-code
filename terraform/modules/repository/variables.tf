@@ -12,6 +12,8 @@ variable "repository" {
     }))
     environments = optional(map(object({
       deployment_branches = optional(list(string))
+      variables           = optional(map(string), {})
+      secrets             = optional(list(string), [])
     })), {})
     rulesets = optional(map(object({
       bypass_apps = optional(list(number), [])

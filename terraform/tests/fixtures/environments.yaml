@@ -4,6 +4,10 @@ organization:
     release:
       deployment_branches:
         - ~DEFAULT_BRANCH
+      variables:
+        APP_ID: 3144447
+      secrets:
+        - APP_PEM_FILE
     staging: {}
 repositories:
   - name: inherit

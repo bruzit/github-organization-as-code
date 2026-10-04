@@ -20,3 +20,26 @@ resource "github_repository_environment_deployment_policy" "this" {
   environment    = github_repository_environment.this.environment
   branch_pattern = each.value == "~DEFAULT_BRANCH" ? var.default_branch : each.value
 }
+
+resource "github_actions_environment_variable" "this" {
+  for_each = var.environment.variables
+
+  repository    = var.repository
+  environment   = github_repository_environment.this.environment
+  variable_name = each.key
+  value         = each.value
+}
+
+resource "github_actions_environment_secret" "this" {
+  for_each = toset(var.environment.secrets)
+
+  repository  = var.repository
+  environment = github_repository_environment.this.environment
+  secret_name = each.value
+  value       = "set-by-hand"
+
+  # remote_updated_at: the "Redundant ignore_changes element" warning is wrong, without it a hand-set value is overwritten with the placeholder.
+  lifecycle {
+    ignore_changes = [value, remote_updated_at]
+  }
+}

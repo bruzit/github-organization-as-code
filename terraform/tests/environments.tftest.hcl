@@ -24,6 +24,16 @@ run "environments" {
   }
 
   assert {
+    condition     = module.repository["inherit"].environments["release"].variables["APP_ID"].value == "3144447" && keys(module.repository["inherit"].environments["release"].secrets) == ["APP_PEM_FILE"] && length(module.repository["inherit"].environments["staging"].variables) == 0 && length(module.repository["inherit"].environments["staging"].secrets) == 0
+    error_message = "Expected organization release variables and secrets inherited."
+  }
+
+  assert {
+    condition     = length(module.repository["override"].environments["release"].variables) == 0 && length(module.repository["override"].environments["release"].secrets) == 0
+    error_message = "A repository environment must replace organization variables and secrets wholesale."
+  }
+
+  assert {
     condition     = length(module.repository["override"].environments["release"].deployment_policies) == 0 && length(module.repository["override"].environments["release"].environment.deployment_branch_policy) == 0
     error_message = "A repository environment must replace the organization one wholesale."
   }
