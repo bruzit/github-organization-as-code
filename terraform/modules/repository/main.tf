@@ -11,6 +11,16 @@ resource "github_repository" "this" {
   delete_branch_on_merge = true
   is_template            = var.repository.is_template
 
+  # advanced_security omitted: setting it errors on public repositories.
+  security_and_analysis {
+    secret_scanning {
+      status = "enabled"
+    }
+    secret_scanning_push_protection {
+      status = "enabled"
+    }
+  }
+
   # Contents
   dynamic "template" {
     for_each = var.repository.template == null ? [] : [var.repository.template]

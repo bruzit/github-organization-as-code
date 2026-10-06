@@ -207,6 +207,10 @@ Removing a repository from the YAML archives it instead of deleting it. Every re
 
 Every repository is managed with `delete_branch_on_merge = true`, so GitHub deletes a pull request's head branch once it is merged. A deleted branch can be restored from its pull request.
 
+### Secret Scanning
+
+Every repository is managed with secret scanning and push protection enabled, so GitHub alerts on committed secrets and blocks pushes containing them. Non-provider patterns and validity checks are not managed.
+
 Set it as source of truth:
 
 ```shell

@@ -33,6 +33,16 @@ run "name_only" {
     condition     = github_repository.this.delete_branch_on_merge
     error_message = "Repository must delete branches on merge."
   }
+
+  assert {
+    condition     = github_repository.this.security_and_analysis[0].secret_scanning[0].status == "enabled"
+    error_message = "Repository must enable secret scanning."
+  }
+
+  assert {
+    condition     = github_repository.this.security_and_analysis[0].secret_scanning_push_protection[0].status == "enabled"
+    error_message = "Repository must enable secret scanning push protection."
+  }
 }
 
 run "name_leading_dot" {
