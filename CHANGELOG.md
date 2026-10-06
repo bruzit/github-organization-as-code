@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.20.0](https://github.com/bruzit/github-organization-as-code/compare/v0.19.0...v0.20.0) (2026-10-06)
+
+### Features
+
+* enforce conventional commits and linear history ([058a61e](https://github.com/bruzit/github-organization-as-code/commit/058a61e4cf3aab58cc133c68829db63a890b0f47))
+
 ## [0.19.0](https://github.com/bruzit/github-organization-as-code/compare/v0.18.0...v0.19.0) (2026-10-06)
 
 ### Features
