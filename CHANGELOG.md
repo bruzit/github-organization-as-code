@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.21.0](https://github.com/bruzit/github-organization-as-code/compare/v0.20.0...v0.21.0) (2026-10-06)
+
+### Features
+
+* support environment reviewers ([585c90e](https://github.com/bruzit/github-organization-as-code/commit/585c90e3767c7366b7ce3a81b88385c173d721a5))
+
 ## [0.20.0](https://github.com/bruzit/github-organization-as-code/compare/v0.19.0...v0.20.0) (2026-10-06)
 
 ### Features
