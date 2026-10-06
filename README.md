@@ -220,7 +220,7 @@ export TF_VAR_config="../test.yaml"
 
 ### Local Usage
 
-Export variables `GITHUB_APP_ID`, `GITHUB_APP_INSTALLATION_ID`, and `GITHUB_APP_PEM_FILE`, or when using direnv copy the template [`.env.tmpl`](.env.tmpl) to `.env` and fill it in.
+Export variables `GITHUB_APP_ID`, `GITHUB_APP_INSTALLATION_ID`, and `GITHUB_APP_PEM_FILE`, or when using direnv copy the templates [`.env.tmpl`](.env.tmpl), [`.env.plan.tmpl`](.env.plan.tmpl) and [`.env.apply.tmpl`](.env.apply.tmpl) without `.tmpl` and fill them in. Plan mode with read-only credentials is the default, apply credentials load only for a single command with `TF_MODE=apply`.
 
 ```shell
 direnv allow
@@ -229,8 +229,8 @@ direnv allow
 
 # Use Terraform as you need
 terraform -chdir=terraform init -backend-config="bucket=$AWS_BUCKET"
-terraform -chdir=terraform plan
-terraform -chdir=terraform apply
+terraform -chdir=terraform plan -lock=false -refresh=false
+TF_MODE=apply direnv exec . terraform -chdir=terraform apply
 ```
 
 ## Development
