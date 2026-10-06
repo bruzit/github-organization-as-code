@@ -538,6 +538,16 @@ run "ruleset" {
   }
 
   assert {
+    condition     = github_repository_ruleset.this["default-branch"].rules[0].required_linear_history
+    error_message = "Expected linear history required."
+  }
+
+  assert {
+    condition     = github_repository_ruleset.this["default-branch"].rules[0].commit_message_pattern[0].operator == "regex" && startswith(github_repository_ruleset.this["default-branch"].rules[0].commit_message_pattern[0].pattern, "^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)")
+    error_message = "Expected a conventional commit message pattern."
+  }
+
+  assert {
     condition     = github_repository_ruleset.this["default-branch"].rules[0].pull_request[0].required_approving_review_count == 0 && length(github_repository_ruleset.this["default-branch"].rules[0].required_status_checks) == 0
     error_message = "Expected a pull request with no approvals and no status checks."
   }
