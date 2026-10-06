@@ -193,7 +193,7 @@ Environments need the App's repository Administration permission, variables and 
 
 `organization.rulesets` is added to every repository's `rulesets`, with the same replace, `~` opt-out and repository-only semantics as [environments](#environments).
 
-Every ruleset protects the repository's default branch: changes only through a pull request (no approval required, so a single maintainer can merge their own), no force pushes, no deletion. No required status checks. On the GitHub Free plan, rulesets are available in public repositories only.
+Every ruleset protects the repository's default branch: changes only through a pull request (no approval required, so a single maintainer can merge their own), no force pushes, no deletion, linear history, [conventional commit](https://www.conventionalcommits.org/) messages with a lowercase subject. No required status checks. On the GitHub Free plan, rulesets are available in public repositories only.
 
 `bypass_apps` lists GitHub App IDs that always bypass the ruleset, e.g. a release App pushing a changelog commit to the default branch. Pushes authenticated by `GITHUB_TOKEN` cannot bypass: a repository releasing with `GITHUB_TOKEN` must opt out.
 

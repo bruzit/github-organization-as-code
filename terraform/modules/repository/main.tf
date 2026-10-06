@@ -75,8 +75,15 @@ resource "github_repository_ruleset" "this" {
   }
 
   rules {
-    deletion         = true
-    non_fast_forward = true
+    deletion                = true
+    non_fast_forward        = true
+    required_linear_history = true
+
+    commit_message_pattern {
+      name     = "Conventional commit, lowercase subject"
+      operator = "regex"
+      pattern  = "^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\\([a-z0-9._/-]+\\))?!?: [^A-Z\\n]+(\\n|$)"
+    }
 
     pull_request {
       required_approving_review_count = 0
