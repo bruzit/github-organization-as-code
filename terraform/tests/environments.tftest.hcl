@@ -4,6 +4,11 @@ mock_provider "github" {
       default_branch = "trunk"
     }
   }
+  mock_data "github_user" {
+    defaults = {
+      id = "1234567"
+    }
+  }
 }
 
 run "environments" {
@@ -51,6 +56,11 @@ run "environments" {
   assert {
     condition     = module.repository["repository-only"].environments["production"].environment.environment == "production" && module.repository["repository-only"].environments["production"].environment.repository == "repository-only"
     error_message = "Unexpected repository-only environment."
+  }
+
+  assert {
+    condition     = module.repository["repository-only"].environments["production"].environment.reviewers[0].users == toset([1234567]) && length(module.repository["inherit"].environments["release"].environment.reviewers) == 0
+    error_message = "Expected reviewers on the repository-only environment only."
   }
 }
 

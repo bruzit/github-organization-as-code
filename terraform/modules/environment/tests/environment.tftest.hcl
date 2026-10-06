@@ -1,4 +1,10 @@
-mock_provider "github" {}
+mock_provider "github" {
+  mock_data "github_user" {
+    defaults = {
+      id = "1234567"
+    }
+  }
+}
 
 variables {
   repository     = "foo"
@@ -30,9 +36,48 @@ run "defaults" {
   }
 
   assert {
+    condition     = length(github_repository_environment.this.reviewers) == 0
+    error_message = "Unexpected reviewers."
+  }
+
+  assert {
     condition     = length(github_repository_environment_deployment_policy.this) == 0
     error_message = "Unexpected deployment policies."
   }
+}
+
+run "reviewers" {
+  command = plan
+
+  variables {
+    environment = {
+      name      = "release"
+      reviewers = ["octocat"]
+    }
+  }
+
+  assert {
+    condition     = data.github_user.this["octocat"].username == "octocat" && github_repository_environment.this.reviewers[0].users == toset([1234567])
+    error_message = "Expected the reviewer's user ID."
+  }
+
+  assert {
+    condition     = github_repository_environment.this.prevent_self_review == false
+    error_message = "Self-review must be allowed."
+  }
+}
+
+run "reviewers_empty" {
+  command = plan
+
+  variables {
+    environment = {
+      name      = "release"
+      reviewers = [" "]
+    }
+  }
+
+  expect_failures = [var.environment]
 }
 
 run "deployment_branches" {

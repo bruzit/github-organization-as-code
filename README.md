@@ -166,6 +166,7 @@ repositories:
         deployment_branches: # OPTIONAL, DEFAULT every branch
           - ~DEFAULT_BRANCH
           - release/*
+        reviewers: [octocat] # OPTIONAL, DEFAULT none; GitHub usernames, any one approves, self-review allowed
     # Rulesets
     rulesets: # OPTIONAL, DEFAULT none
       default-branch: ~ # opts out of the organization ruleset
@@ -175,7 +176,7 @@ repositories:
 
 `organization.environments` is added to every repository's `environments`. A repository environment of the same name replaces the organization one wholesale (no key-level merge), `~` opts the repository out of it, other names are repository-only.
 
-`deployment_branches` limits deployments to branches matching the name patterns; without it every branch can deploy. `~DEFAULT_BRANCH` stands for the repository's default branch, resolved by Terraform (GitHub deployment branch policies have no such token). No reviewers or wait timer: a job targeting the environment runs without an approval step. Repository admins cannot bypass environment protection rules.
+`deployment_branches` limits deployments to branches matching the name patterns; without it every branch can deploy. `~DEFAULT_BRANCH` stands for the repository's default branch, resolved by Terraform (GitHub deployment branch policies have no such token). `reviewers` requires one of the listed users to approve a job targeting the environment (self-review allowed, for a single maintainer); without it the job runs without an approval step. No wait timer. Repository admins cannot bypass environment protection rules.
 
 `variables` maps variable names to values, managed by Terraform: a value changed by hand is reverted on the next apply.
 

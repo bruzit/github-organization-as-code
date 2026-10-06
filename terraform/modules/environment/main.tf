@@ -1,7 +1,22 @@
+data "github_user" "this" {
+  for_each = toset(var.environment.reviewers)
+
+  username = each.value
+}
+
 resource "github_repository_environment" "this" {
-  repository        = var.repository
-  environment       = var.environment.name
-  can_admins_bypass = false
+  repository          = var.repository
+  environment         = var.environment.name
+  can_admins_bypass   = false
+  prevent_self_review = false
+
+  dynamic "reviewers" {
+    for_each = length(var.environment.reviewers) > 0 ? [true] : []
+
+    content {
+      users = [for u in var.environment.reviewers : tonumber(data.github_user.this[u].id)]
+    }
+  }
 
   dynamic "deployment_branch_policy" {
     for_each = var.environment.deployment_branches == null ? [] : [true]
