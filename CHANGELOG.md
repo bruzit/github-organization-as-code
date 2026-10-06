@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.17.0](https://github.com/bruzit/github-organization-as-code/compare/v0.16.1...v0.17.0) (2026-10-06)
+
+### Features
+
+* add plan to the job summary ([bdbc935](https://github.com/bruzit/github-organization-as-code/commit/bdbc935a15abba172b3b37e38d14c2189cc84dcf))
+
 ## [0.16.1](https://github.com/bruzit/github-organization-as-code/compare/v0.16.0...v0.16.1) (2026-10-04)
 
 ### Bug Fixes
