@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.19.0](https://github.com/bruzit/github-organization-as-code/compare/v0.18.0...v0.19.0) (2026-10-06)
+
+### Features
+
+* add plan and apply credential modes ([21222b8](https://github.com/bruzit/github-organization-as-code/commit/21222b8b14fc758b2391f08fad442aeb6324e4c8))
+
 ## [0.18.0](https://github.com/bruzit/github-organization-as-code/compare/v0.17.0...v0.18.0) (2026-10-06)
 
 ### Features
