@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.18.0](https://github.com/bruzit/github-organization-as-code/compare/v0.17.0...v0.18.0) (2026-10-06)
+
+### Features
+
+* enable secret scanning and push protection ([04cb9a2](https://github.com/bruzit/github-organization-as-code/commit/04cb9a26aa89f1032f4444fb3f0fad1887f3c4fa))
+
 ## [0.17.0](https://github.com/bruzit/github-organization-as-code/compare/v0.16.1...v0.17.0) (2026-10-06)
 
 ### Features
