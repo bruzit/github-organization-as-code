@@ -14,6 +14,7 @@ variable "environment" {
     deployment_branches = optional(list(string))
     variables           = optional(map(string), {})
     secrets             = optional(list(string), [])
+    reviewers           = optional(list(string), [])
   })
   description = "Environment configuration"
   validation {
@@ -31,5 +32,9 @@ variable "environment" {
   validation {
     condition     = try(length(distinct([for n in keys(var.environment.variables) : upper(n)])) == length(var.environment.variables) && length(distinct([for n in var.environment.secrets : upper(n)])) == length(var.environment.secrets), false)
     error_message = "Repository ${var.repository}, environment ${try(coalesce(var.environment.name), "")}: variable and secret names must be unique (case-insensitive)."
+  }
+  validation {
+    condition     = try(alltrue([for u in var.environment.reviewers : trimspace(u) != ""]), false)
+    error_message = "Repository ${var.repository}, environment ${try(coalesce(var.environment.name), "")}: reviewers must be non-empty GitHub usernames."
   }
 }

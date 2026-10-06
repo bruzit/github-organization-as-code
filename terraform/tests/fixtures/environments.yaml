@@ -22,3 +22,5 @@ repositories:
       production:
         deployment_branches:
           - ~DEFAULT_BRANCH
+        reviewers:
+          - octocat
