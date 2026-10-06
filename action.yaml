@@ -38,6 +38,8 @@ runs:
   steps:
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v4
+      with:
+        terraform_wrapper: false
     - name: Terraform fmt
       shell: bash
       run: terraform -chdir="$GITHUB_ACTION_PATH/terraform" fmt -check
@@ -80,7 +82,20 @@ runs:
         case "$MODE" in
           apply) args=(apply -auto-approve) ;;
           # Read-only App can't see merge settings or bypass actors
-          plan) args=(plan -lock=false -refresh=false) ;;
+          plan) args=(plan -lock=false -refresh=false -out="$RUNNER_TEMP/tfplan") ;;
           *) echo "::error::mode must be apply or plan, got: $MODE"; exit 1 ;;
         esac
         TF_VAR_config="$GITHUB_WORKSPACE/$CONFIG_PATH" terraform -chdir="$GITHUB_ACTION_PATH/terraform" "${args[@]}" -input=false
+        [[ "$MODE" == plan ]] || exit 0
+        out="$RUNNER_TEMP/tfplan.txt"
+        terraform -chdir="$GITHUB_ACTION_PATH/terraform" show -no-color "$RUNNER_TEMP/tfplan" > "$out"
+        {
+          echo "## Terraform plan ($GITHUB_OWNER)"
+          grep -m1 -E '^(Plan:|No changes\.)' "$out" || true
+          echo '```text'
+          size=$(wc -c < "$out")
+          head -c 1000000 "$out"
+          ((size <= 1000000)) || echo
+          echo '```'
+          ((size <= 1000000)) || echo '_Plan truncated to 1 MB, see the job log._'
+        } >> "$GITHUB_STEP_SUMMARY"
