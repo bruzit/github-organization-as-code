@@ -1,5 +1,8 @@
 ---
 organization:
+  members:
+    admins:
+      - bruzina
   environments:
     release:
       deployment_branches:

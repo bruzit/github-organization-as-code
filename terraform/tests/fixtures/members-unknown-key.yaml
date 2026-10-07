@@ -1,0 +1,9 @@
+---
+organization:
+  members:
+    admins:
+      - bruzina
+    owners:
+      - octocat
+repositories:
+  - name: foo

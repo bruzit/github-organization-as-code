@@ -43,6 +43,7 @@ To create a GitHub App and a GitHub App Installation:
         - Variables: Read and write
       - Organization permissions
         - Administration: Read and write
+        - Members: Read and write
       - Where can this GitHub App be installed?: _choose what suits you best_
     - **Create GitHub App**
   - _your app_
@@ -132,6 +133,9 @@ Create the configuration file:
 ```yaml
 ---
 organization: # OPTIONAL
+  members: # OPTIONAL, DEFAULT none
+    admins: # REQUIRED; GitHub usernames
+      - octocat
   environments: # OPTIONAL, DEFAULT none; added to every repository
     release:
       deployment_branches: # OPTIONAL, DEFAULT every branch
@@ -171,6 +175,12 @@ repositories:
     rulesets: # OPTIONAL, DEFAULT none
       default-branch: ~ # opts out of the organization ruleset
 ```
+
+### Members
+
+`organization.members.admins` lists the organization owners. Only owners are managed: other members, teams and outside collaborators stay unmanaged. A listed user who is not a member yet is invited and stays pending until they accept. Every owner has `prevent_destroy`, so removing one from the list fails the plan; demote or remove an owner explicitly (`removed` block or `terraform state rm`). Existing memberships are imported, which needs the Terraform workspace named after the organization.
+
+Members need the App's organization Members permission, see [GitHub App](#github-app).
 
 ### Environments
 

@@ -1,0 +1,6 @@
+---
+organization:
+  members:
+    admins: []
+repositories:
+  - name: foo

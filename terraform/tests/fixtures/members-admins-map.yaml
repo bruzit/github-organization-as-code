@@ -1,0 +1,7 @@
+---
+organization:
+  members:
+    admins:
+      bruzina: admin
+repositories:
+  - name: foo

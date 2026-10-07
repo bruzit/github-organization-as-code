@@ -6,11 +6,20 @@ mock_provider "github" {
   }
 }
 
+override_resource {
+  target = github_membership.admin
+}
+
 run "test_yaml" {
   command = apply
 
   variables {
     config = "../test.yaml"
+  }
+
+  assert {
+    condition     = keys(github_membership.admin) == ["bruzina"]
+    error_message = "Expected admin bruzina."
   }
 
   assert {
