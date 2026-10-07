@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.22.0](https://github.com/bruzit/github-organization-as-code/compare/v0.21.0...v0.22.0) (2026-10-07)
+
+### Features
+
+* manage organization owners ([123fa36](https://github.com/bruzit/github-organization-as-code/commit/123fa36da49dcfca3fb4dfd5f0cca6f0bbc08416))
+
 ## [0.21.0](https://github.com/bruzit/github-organization-as-code/compare/v0.20.0...v0.21.0) (2026-10-06)
 
 ### Features
