@@ -45,10 +45,3 @@ resource "github_membership" "admin" {
     prevent_destroy = true
   }
 }
-
-# Keep until every workspace has applied this; the workspace is named after the organization.
-import {
-  for_each = local.organization_admins
-  to       = github_membership.admin[each.key]
-  id       = "${terraform.workspace}:${each.key}"
-}
