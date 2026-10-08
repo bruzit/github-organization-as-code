@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.24.0](https://github.com/bruzit/github-organization-as-code/compare/v0.23.0...v0.24.0) (2026-10-08)
+
+### Features
+
+* allow only rebase and squash merges ([bc7b8fb](https://github.com/bruzit/github-organization-as-code/commit/bc7b8fb223018585099b515d3326bd7733d4a20b))
+
 ## [0.23.0](https://github.com/bruzit/github-organization-as-code/compare/v0.22.0...v0.23.0) (2026-10-08)
 
 ### Features
