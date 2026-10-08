@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.26.0](https://github.com/bruzit/github-organization-as-code/compare/v0.25.0...v0.26.0) (2026-10-08)
+
+### Features
+
+* enable issues ([426870e](https://github.com/bruzit/github-organization-as-code/commit/426870e1cdf1c6e0fb7ed087c86a652e1c3e80bd))
+
+### Bug Fixes
+
+* drop redundant ignore_changes element ([a81580e](https://github.com/bruzit/github-organization-as-code/commit/a81580e2b9b189fbf16f4d9b923a081c31a96272))
+
 ## [0.25.0](https://github.com/bruzit/github-organization-as-code/compare/v0.24.0...v0.25.0) (2026-10-08)
 
 ### Features
