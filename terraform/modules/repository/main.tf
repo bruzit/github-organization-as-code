@@ -7,9 +7,14 @@ resource "github_repository" "this" {
   topics       = var.repository.topics
 
   # Properties
-  archive_on_destroy     = true
-  delete_branch_on_merge = true
-  is_template            = var.repository.is_template
+  archive_on_destroy          = true
+  allow_merge_commit          = false
+  allow_rebase_merge          = true
+  allow_squash_merge          = true
+  squash_merge_commit_title   = "COMMIT_OR_PR_TITLE"
+  squash_merge_commit_message = "COMMIT_MESSAGES"
+  delete_branch_on_merge      = true
+  is_template                 = var.repository.is_template
 
   # advanced_security omitted: setting it errors on public repositories.
   security_and_analysis {
