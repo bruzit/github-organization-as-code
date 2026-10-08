@@ -6,7 +6,7 @@ locals {
   allowed_members_keys      = ["admins"]
   allowed_repository_keys   = ["name", "description", "homepage_url", "topics", "is_template", "template", "environments", "rulesets"]
   allowed_environment_keys  = ["deployment_branches", "variables", "secrets", "reviewers"]
-  allowed_ruleset_keys      = ["bypass_apps"]
+  allowed_ruleset_keys      = ["target", "bypass_apps"]
 
   organization_admins = try(toset(local.config.organization.members.admins), toset([]))
 

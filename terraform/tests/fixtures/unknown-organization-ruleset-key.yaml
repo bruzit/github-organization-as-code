@@ -2,6 +2,6 @@
 organization:
   rulesets:
     default-branch:
-      target: tag
+      enforcement: evaluate
 repositories:
   - name: foo

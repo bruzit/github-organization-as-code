@@ -17,6 +17,7 @@ variable "repository" {
       reviewers           = optional(list(string), [])
     })), {})
     rulesets = optional(map(object({
+      target      = optional(string, "branch")
       bypass_apps = optional(list(number), [])
     })), {})
   })
@@ -48,5 +49,9 @@ variable "repository" {
   validation {
     condition     = try(alltrue([for r in values(var.repository.rulesets) : alltrue([for id in r.bypass_apps : id > 0 && floor(id) == id]) && length(distinct(r.bypass_apps)) == length(r.bypass_apps)]), false)
     error_message = "Repository ${try(coalesce(var.repository.name), "")}: ruleset bypass_apps must be distinct GitHub App IDs (positive integers)."
+  }
+  validation {
+    condition     = try(alltrue([for r in values(var.repository.rulesets) : contains(["branch", "tag"], r.target)]), false)
+    error_message = "Repository ${try(coalesce(var.repository.name), "")}: ruleset target must be branch or tag."
   }
 }

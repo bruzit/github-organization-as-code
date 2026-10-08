@@ -11,6 +11,8 @@ organization:
     default-branch:
       bypass_apps:
         - 3144447 # bruzit-github-contents
+    release-tags:
+      target: tag
 repositories:
   - name: .github
     description: "BruzIT Test organization profile and the declarative YAML definition of its repositories, reconciled into GitHub by GitHub Organization as Code."
