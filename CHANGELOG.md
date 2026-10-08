@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.23.0](https://github.com/bruzit/github-organization-as-code/compare/v0.22.0...v0.23.0) (2026-10-08)
+
+### Features
+
+* protect release tags ([9adcde2](https://github.com/bruzit/github-organization-as-code/commit/9adcde24bbe217e4efc5518e1e937cafb72e549e))
+
 ## [0.22.0](https://github.com/bruzit/github-organization-as-code/compare/v0.21.0...v0.22.0) (2026-10-07)
 
 ### Features
