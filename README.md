@@ -243,6 +243,10 @@ Every repository is managed with `delete_branch_on_merge = true`, so GitHub dele
 
 Every repository allows rebase and squash merges only, merge commits are off. A squash merge commit takes its title and message from the commits, not the pull request: a single-commit pull request squashes into its commit subject, so it passes the [ruleset](#rulesets) commit message pattern. A multi-commit pull request squash defaults to the pull request title; edit it or rebase instead.
 
+### Issues
+
+Every repository has issues enabled: GitHub Issues are the public intake.
+
 ### Secret Scanning
 
 Every repository is managed with secret scanning and push protection enabled, so GitHub alerts on committed secrets and blocks pushes containing them. Non-provider patterns and validity checks are not managed.
