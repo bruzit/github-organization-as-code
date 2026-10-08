@@ -53,8 +53,7 @@ resource "github_actions_environment_secret" "this" {
   secret_name = each.value
   value       = "set-by-hand"
 
-  # remote_updated_at: the "Redundant ignore_changes element" warning is wrong, without it a hand-set value is overwritten with the placeholder.
   lifecycle {
-    ignore_changes = [value, remote_updated_at]
+    ignore_changes = [value]
   }
 }
