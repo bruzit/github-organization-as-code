@@ -538,6 +538,11 @@ run "ruleset" {
   }
 
   assert {
+    condition     = !github_repository_ruleset.this["default-branch"].rules[0].update
+    error_message = "Expected branch updates allowed."
+  }
+
+  assert {
     condition     = github_repository_ruleset.this["default-branch"].rules[0].required_linear_history
     error_message = "Expected linear history required."
   }
@@ -556,6 +561,55 @@ run "ruleset" {
     condition     = [for a in github_repository_ruleset.this["default-branch"].bypass_actors : a.actor_id] == [3144447, 42] && alltrue([for a in github_repository_ruleset.this["default-branch"].bypass_actors : a.actor_type == "Integration" && a.bypass_mode == "always"])
     error_message = "Expected the Apps to always bypass."
   }
+}
+
+run "ruleset_tag" {
+  command = plan
+
+  variables {
+    repository = {
+      name     = "foo"
+      rulesets = { release-tags = { target = "tag" } }
+    }
+  }
+
+  assert {
+    condition     = github_repository_ruleset.this["release-tags"].target == "tag" && github_repository_ruleset.this["release-tags"].enforcement == "active"
+    error_message = "Expected an active tag ruleset."
+  }
+
+  assert {
+    condition     = github_repository_ruleset.this["release-tags"].conditions[0].ref_name[0].include == tolist(["refs/tags/v*.*.*"]) && length(github_repository_ruleset.this["release-tags"].conditions[0].ref_name[0].exclude) == 0
+    error_message = "Expected release tags vX.Y.Z only."
+  }
+
+  assert {
+    condition     = github_repository_ruleset.this["release-tags"].rules[0].update && github_repository_ruleset.this["release-tags"].rules[0].deletion && github_repository_ruleset.this["release-tags"].rules[0].creation != true
+    error_message = "Expected update and deletion blocked, creation allowed."
+  }
+
+  assert {
+    condition     = !github_repository_ruleset.this["release-tags"].rules[0].non_fast_forward && !github_repository_ruleset.this["release-tags"].rules[0].required_linear_history && length(github_repository_ruleset.this["release-tags"].rules[0].commit_message_pattern) == 0 && length(github_repository_ruleset.this["release-tags"].rules[0].pull_request) == 0
+    error_message = "Expected no branch rules."
+  }
+
+  assert {
+    condition     = length(github_repository_ruleset.this["release-tags"].bypass_actors) == 0
+    error_message = "Expected no bypass actors."
+  }
+}
+
+run "ruleset_target_invalid" {
+  command = plan
+
+  variables {
+    repository = {
+      name     = "foo"
+      rulesets = { default-branch = { target = "push" } }
+    }
+  }
+
+  expect_failures = [var.repository]
 }
 
 run "ruleset_bypass_apps_absent" {

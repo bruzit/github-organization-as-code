@@ -8,7 +8,7 @@ GitOps workflow turning a declarative YAML organization definition into GitHub r
   - **Repository metadata** - Define description, homepage URL, topics.
   - **Environments** - Define deployment environments per repository or once for every repository.
     - **Variables and secrets** - Define environment variables and secret placeholders.
-  - **Rulesets** - Protect default branches per repository or once for every repository.
+  - **Rulesets** - Protect default branches and release tags per repository or once for every repository.
 - **GitOps Composite Action** - Manage configurations using pull requests and automate updates using a [composite action](action.yaml).
 - **Terraform** - Uses Terraform under the hood to apply changes efficiently.
 - **Terraform State Management** - Stores Terraform state securely in AWS S3.
@@ -146,8 +146,11 @@ organization: # OPTIONAL
         - APP_PEM_FILE
   rulesets: # OPTIONAL, DEFAULT none; added to every repository
     default-branch:
+      target: branch # OPTIONAL, DEFAULT branch; branch or tag
       bypass_apps: # OPTIONAL, DEFAULT none
         - 123456
+    release-tags:
+      target: tag
 repositories:
   - name: repo-slug
   # Metadata
@@ -204,7 +207,11 @@ Environments need the App's repository Administration permission, variables and 
 
 `organization.rulesets` is added to every repository's `rulesets`, with the same replace, `~` opt-out and repository-only semantics as [environments](#environments).
 
-Every ruleset protects the repository's default branch: changes only through a pull request (no approval required, so a single maintainer can merge their own), no force pushes, no deletion, linear history, [conventional commit](https://www.conventionalcommits.org/) messages with a lowercase subject. No required status checks. On the GitHub Free plan, rulesets are available in public repositories only.
+A `branch` ruleset (default `target`) protects the repository's default branch: changes only through a pull request (no approval required, so a single maintainer can merge their own), no force pushes, no deletion, linear history, [conventional commit](https://www.conventionalcommits.org/) messages with a lowercase subject. No required status checks.
+
+A `tag` ruleset protects release tags `vX.Y.Z` (`refs/tags/v*.*.*`): no update, no deletion; creation stays allowed, e.g. for semantic-release. Major tags `vN` do not match, so a release App can still move them.
+
+On the GitHub Free plan, rulesets are available in public repositories only.
 
 `bypass_apps` lists GitHub App IDs that always bypass the ruleset, e.g. a release App pushing a changelog commit to the default branch. Pushes authenticated by `GITHUB_TOKEN` cannot bypass: a repository releasing with `GITHUB_TOKEN` must opt out.
 

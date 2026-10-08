@@ -73,7 +73,7 @@ run "test_yaml" {
   }
 
   assert {
-    condition     = alltrue([for m in module.repository : keys(m.rulesets) == ["default-branch"] && [for a in m.rulesets["default-branch"].bypass_actors : a.actor_id] == [3144447]])
-    error_message = "Expected the default-branch ruleset with the semantic-release App bypass in every repository."
+    condition     = alltrue([for m in module.repository : keys(m.rulesets) == ["default-branch", "release-tags"] && [for a in m.rulesets["default-branch"].bypass_actors : a.actor_id] == [3144447] && m.rulesets["release-tags"].target == "tag" && length(m.rulesets["release-tags"].bypass_actors) == 0])
+    error_message = "Expected the default-branch ruleset with the semantic-release App bypass and the release-tags ruleset without bypass in every repository."
   }
 }

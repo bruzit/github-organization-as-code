@@ -54,12 +54,12 @@ resource "github_repository_ruleset" "this" {
 
   repository  = github_repository.this.name
   name        = each.key
-  target      = "branch"
+  target      = each.value.target
   enforcement = "active"
 
   conditions {
     ref_name {
-      include = ["~DEFAULT_BRANCH"]
+      include = [each.value.target == "tag" ? "refs/tags/v*.*.*" : "~DEFAULT_BRANCH"]
       exclude = []
     }
   }
@@ -76,17 +76,26 @@ resource "github_repository_ruleset" "this" {
 
   rules {
     deletion                = true
-    non_fast_forward        = true
-    required_linear_history = true
+    update                  = each.value.target == "tag"
+    non_fast_forward        = each.value.target == "branch"
+    required_linear_history = each.value.target == "branch"
 
-    commit_message_pattern {
-      name     = "Conventional commit, lowercase subject"
-      operator = "regex"
-      pattern  = "^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\\([a-z0-9._/-]+\\))?!?: [^A-Z\\n]+(\\n|$)"
+    dynamic "commit_message_pattern" {
+      for_each = each.value.target == "branch" ? [1] : []
+
+      content {
+        name     = "Conventional commit, lowercase subject"
+        operator = "regex"
+        pattern  = "^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\\([a-z0-9._/-]+\\))?!?: [^A-Z\\n]+(\\n|$)"
+      }
     }
 
-    pull_request {
-      required_approving_review_count = 0
+    dynamic "pull_request" {
+      for_each = each.value.target == "branch" ? [1] : []
+
+      content {
+        required_approving_review_count = 0
+      }
     }
   }
 }
