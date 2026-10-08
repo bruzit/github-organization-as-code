@@ -45,3 +45,15 @@ resource "github_membership" "admin" {
     prevent_destroy = true
   }
 }
+
+# UI-only setting (integrations/terraform-provider-github#3388); data source outside the check, nested ones show in every plan
+data "github_organization" "organization" {
+  name = terraform.workspace
+}
+
+check "two_factor_requirement" {
+  assert {
+    condition     = data.github_organization.organization.two_factor_requirement_enabled == true
+    error_message = "Organization ${terraform.workspace} does not require two-factor authentication: enable it in Settings / Authentication security."
+  }
+}

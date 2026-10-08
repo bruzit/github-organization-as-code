@@ -1,4 +1,10 @@
-mock_provider "github" {}
+mock_provider "github" {
+  mock_data "github_organization" {
+    defaults = {
+      two_factor_requirement_enabled = true
+    }
+  }
+}
 
 run "repositories_missing" {
   command = plan
