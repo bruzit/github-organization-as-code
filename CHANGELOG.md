@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.25.0](https://github.com/bruzit/github-organization-as-code/compare/v0.24.0...v0.25.0) (2026-10-08)
+
+### Features
+
+* warn when two-factor authentication is not required ([82f4372](https://github.com/bruzit/github-organization-as-code/commit/82f4372e0b598119f9c200ec3722cd67d5a8a86e))
+
 ## [0.24.0](https://github.com/bruzit/github-organization-as-code/compare/v0.23.0...v0.24.0) (2026-10-08)
 
 ### Features
