@@ -35,6 +35,16 @@ run "name_only" {
   }
 
   assert {
+    condition     = !github_repository.this.allow_merge_commit && github_repository.this.allow_rebase_merge && github_repository.this.allow_squash_merge
+    error_message = "Repository must allow rebase and squash merges only."
+  }
+
+  assert {
+    condition     = github_repository.this.squash_merge_commit_title == "COMMIT_OR_PR_TITLE" && github_repository.this.squash_merge_commit_message == "COMMIT_MESSAGES"
+    error_message = "Squash merge commit must take its title and message from the commits."
+  }
+
+  assert {
     condition     = github_repository.this.security_and_analysis[0].secret_scanning[0].status == "enabled"
     error_message = "Repository must enable secret scanning."
   }
