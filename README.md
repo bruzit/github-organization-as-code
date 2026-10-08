@@ -185,6 +185,8 @@ repositories:
 
 Members need the App's organization Members permission, see [GitHub App](#github-app).
 
+Require two-factor authentication by hand in _Organization_ / Settings / Authentication security (neither the API nor the Terraform provider can set it); plans warn while it is not required.
+
 ### Environments
 
 `organization.environments` is added to every repository's `environments`. A repository environment of the same name replaces the organization one wholesale (no key-level merge), `~` opts the repository out of it, other names are repository-only.

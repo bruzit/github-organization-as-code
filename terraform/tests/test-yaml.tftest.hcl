@@ -1,4 +1,9 @@
 mock_provider "github" {
+  mock_data "github_organization" {
+    defaults = {
+      two_factor_requirement_enabled = true
+    }
+  }
   mock_data "github_repository" {
     defaults = {
       default_branch = "main"
