@@ -11,17 +11,23 @@ GitOps workflow turning a declarative YAML organization definition into GitHub r
   - **Rulesets** - Protect default branches and release tags per repository or once for every repository.
 - **GitOps Composite Action** - Manage configurations using pull requests and automate updates using a [composite action](action.yaml).
 - **Terraform** - Uses Terraform under the hood to apply changes efficiently.
-- **Terraform State Management** - Stores Terraform state securely in AWS S3.
+- **Terraform State Management** - Stores Terraform state in an S3-compatible bucket, e.g. Cloudflare R2, one workspace per organization.
 - **GitHub App Integration** - Uses a GitHub App for authentication and API interactions.
 
 ## Installation and Configuration
 
-- Configure an AWS S3 bucket to store Terraform state files.
+- Configure an S3-compatible bucket to store Terraform state files, see [Terraform State Backend](#terraform-state-backend).
 - Set up a GitHub App and its installation to handle authentication and authorization for your GitHub Organization.
 - Implement GitOps by setting up a GitHub repository with:
   - YAML-based configuration
   - GitHub workflows
-  - Repository variables and secrets
+  - Environment variables and secrets
+
+### Terraform State Backend
+
+The [S3 backend](terraform/config.tf) works with any S3-compatible storage; BruzIT uses Cloudflare R2 with the bucket `bruzit-terraform-github`. The action passes the bucket at init (`-backend-config="bucket=..."` from `aws-bucket`) and the endpoint as `AWS_ENDPOINT_URL_S3` (from `aws-endpoint-url-s3`, e.g. `https://ACCOUNT_ID.r2.cloudflarestorage.com`). `skip_credentials_validation` and `skip_requesting_account_id` skip the AWS STS and IAM calls non-AWS storage does not serve; `use_lockfile` locks the state with a lock object in the bucket, which needs conditional writes.
+
+Each organization has its own Terraform workspace, `TF_WORKSPACE` set to `owner`, so several organizations share one bucket with separate states.
 
 ### GitHub App
 
@@ -83,6 +89,7 @@ concurrency:
 jobs:
   terraform:
     name: Terraform
+    environment: production
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -105,24 +112,25 @@ jobs:
 
 The [action](action.yaml) runs the Terraform code shipped with the action against the configuration file at `path`, relative to the workspace, so the caller checks out its repository first. It sets up the latest Terraform, checks formatting, initializes the S3 backend in `aws-bucket`, selects the workspace named after `owner`, validates, and applies with `-auto-approve`. `concurrency` queues pushes instead of failing the apply on the state lock.
 
-`mode: plan` runs `terraform plan -lock=false -refresh=false` instead of the apply, for pull requests with read-only credentials (a read-only S3 key cannot write the state lock); no refresh, it compares against the last applied state.
+`mode: plan` runs `terraform plan -lock=false -refresh=false` instead of the apply, for pull requests with read-only credentials (a read-only S3 key cannot write the state lock); no refresh, it compares against the last applied state. Run it on `pull_request` with `environment: plan`.
 
-Set up GitHub actions, variables and secrets:
+CI credentials live in GitHub environment variables and secrets, not repository ones, one environment per mode with the same names:
 
-- GitHub / _Repository_ / Settings
-  - Secrets and variables / Actions / Actions secrets and variables
-    - Secrets
-      - **New repository secret**
-        - `GH_TF_APP_PEM_FILE` (`GITHUB_APP_PEM_FILE_PATH` contents)
-        - `AWS_ACCESS_KEY_ID`
-        - `AWS_SECRET_ACCESS_KEY`
-    - Variables
-      - **New repository variable**
-        - `GH_TF_OWNER` (`GITHUB_OWNER`)
-        - `GH_TF_APP_ID` (`GITHUB_APP_ID`)
-        - `GH_TF_APP_INSTALLATION_ID` (`GITHUB_APP_INSTALLATION_ID`)
-        - `AWS_ENDPOINT_URL_S3`
-        - `AWS_TF_BUCKET` (S3 bucket name for Terraform state)
+| Name                        | Kind     | Local equivalent                    |
+|-----------------------------|----------|-------------------------------------|
+| `GH_TF_OWNER`               | variable | `GITHUB_OWNER`                      |
+| `GH_TF_APP_ID`              | variable | `GITHUB_APP_ID`                     |
+| `GH_TF_APP_INSTALLATION_ID` | variable | `GITHUB_APP_INSTALLATION_ID`        |
+| `AWS_TF_BUCKET`             | variable | `AWS_BUCKET`                        |
+| `AWS_ENDPOINT_URL_S3`       | variable | `AWS_ENDPOINT_URL_S3`               |
+| `GH_TF_APP_PEM_FILE`        | secret   | `GITHUB_APP_PEM_FILE_PATH` contents |
+| `AWS_ACCESS_KEY_ID`         | secret   | `AWS_ACCESS_KEY_ID`                 |
+| `AWS_SECRET_ACCESS_KEY`     | secret   | `AWS_SECRET_ACCESS_KEY`             |
+
+- Apply environment, e.g. `production` (`test` against `bruzit-test` in this repository): read-write App and S3 key, `deployment_branches` limited to `~DEFAULT_BRANCH`, so only the default branch can apply.
+- `plan` environment: a separate read-only App and a read-only S3 key, no branch limit, so pull request branches can plan.
+
+Declare the environments in the configuration file like any other, see [Environments](#environments), and set the secret values by hand.
 
 ## Usage
 
@@ -187,6 +195,10 @@ Members need the App's organization Members permission, see [GitHub App](#github
 
 Require two-factor authentication by hand in _Organization_ / Settings / Authentication security (neither the API nor the Terraform provider can set it); plans warn while it is not required.
 
+### Templates
+
+`template` creates the repository from the template repository `OWNER/REPOSITORY` (`owner`, `repository`), which needs `is_template: true`: its default branch only, every branch with `include_all_branches: true`. It applies at creation only; adding or changing it on an existing repository does not touch its contents.
+
 ### Environments
 
 `organization.environments` is added to every repository's `environments`. A repository environment of the same name replaces the organization one wholesale (no key-level merge), `~` opts the repository out of it, other names are repository-only.
@@ -244,12 +256,12 @@ export TF_VAR_config="../test.yaml"
 
 ### Local Usage
 
-Export variables `GITHUB_APP_ID`, `GITHUB_APP_INSTALLATION_ID`, and `GITHUB_APP_PEM_FILE`, or when using direnv copy the templates [`.env.tmpl`](.env.tmpl), [`.env.plan.tmpl`](.env.plan.tmpl) and [`.env.apply.tmpl`](.env.apply.tmpl) without `.tmpl` and fill them in. Plan mode with read-only credentials is the default, apply credentials load only for a single command with `TF_MODE=apply`.
+Export the local equivalents from the [table above](#use-terraform-action), the PEM contents as `GITHUB_APP_PEM_FILE`, plus `TF_WORKSPACE` and `TF_VAR_config`, or when using direnv copy the templates [`.env.tmpl`](.env.tmpl), [`.env.plan.tmpl`](.env.plan.tmpl) and [`.env.apply.tmpl`](.env.apply.tmpl) without `.tmpl` and fill them in: `.env` holds the backend bucket and endpoint, owner and configuration path, `.env.plan` and `.env.apply` the credentials of the `plan` and apply environments; [`.envrc`](.envrc) sets `TF_WORKSPACE` to `GITHUB_OWNER`. Plan mode with read-only credentials is the default, apply credentials load only for a single command with `TF_MODE=apply`.
 
 ```shell
 direnv allow
 # direnv: loading ~/bruzit/github-organization-as-code/.envrc
-# direnv: export +AWS_ACCESS_KEY_ID +AWS_BUCKET +AWS_ENDPOINT_URL_S3 +AWS_SECRET_ACCESS_KEY +GITHUB_APP_ID +GITHUB_APP_INSTALLATION_ID +GITHUB_APP_PEM_FILE +GITHUB_APP_PEM_FILE_PATH +GITHUB_OWNER +TF_VAR_config
+# direnv: export +AWS_ACCESS_KEY_ID +AWS_BUCKET +AWS_ENDPOINT_URL_S3 +AWS_SECRET_ACCESS_KEY +GITHUB_APP_ID +GITHUB_APP_INSTALLATION_ID +GITHUB_APP_PEM_FILE +GITHUB_APP_PEM_FILE_PATH +GITHUB_OWNER +TF_VAR_config +TF_WORKSPACE
 
 # Use Terraform as you need
 terraform -chdir=terraform init -backend-config="bucket=$AWS_BUCKET"
