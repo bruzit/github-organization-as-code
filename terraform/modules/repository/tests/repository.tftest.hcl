@@ -45,6 +45,11 @@ run "name_only" {
   }
 
   assert {
+    condition     = github_repository.this.has_issues
+    error_message = "Repository must enable issues."
+  }
+
+  assert {
     condition     = github_repository.this.security_and_analysis[0].secret_scanning[0].status == "enabled"
     error_message = "Repository must enable secret scanning."
   }

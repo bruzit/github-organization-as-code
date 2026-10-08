@@ -14,6 +14,7 @@ resource "github_repository" "this" {
   squash_merge_commit_title   = "COMMIT_OR_PR_TITLE"
   squash_merge_commit_message = "COMMIT_MESSAGES"
   delete_branch_on_merge      = true
+  has_issues                  = true
   is_template                 = var.repository.is_template
 
   # advanced_security omitted: setting it errors on public repositories.
