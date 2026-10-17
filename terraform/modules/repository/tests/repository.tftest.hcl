@@ -50,6 +50,11 @@ run "name_only" {
   }
 
   assert {
+    condition     = github_repository.this.visibility == "public"
+    error_message = "Repository must default to public."
+  }
+
+  assert {
     condition     = github_repository.this.security_and_analysis[0].secret_scanning[0].status == "enabled"
     error_message = "Repository must enable secret scanning."
   }
@@ -437,6 +442,40 @@ run "is_template_false" {
     condition     = github_repository.this.is_template == false
     error_message = "Unexpected is_template."
   }
+}
+
+run "visibility_private" {
+  command = plan
+
+  variables {
+    repository = {
+      name       = "foo"
+      visibility = "private"
+    }
+  }
+
+  assert {
+    condition     = github_repository.this.visibility == "private"
+    error_message = "Unexpected visibility."
+  }
+
+  assert {
+    condition     = length(github_repository.this.security_and_analysis) == 0
+    error_message = "Private repository must not manage security_and_analysis."
+  }
+}
+
+run "visibility_internal" {
+  command = plan
+
+  variables {
+    repository = {
+      name       = "foo"
+      visibility = "internal"
+    }
+  }
+
+  expect_failures = [var.repository]
 }
 
 run "template" {
