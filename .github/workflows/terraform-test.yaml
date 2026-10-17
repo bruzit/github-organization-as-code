@@ -17,6 +17,7 @@ concurrency:
 
 jobs:
   gate:
+    name: Gate
     runs-on: ubuntu-slim
     outputs:
       run: ${{ steps.check.outputs.run }}
