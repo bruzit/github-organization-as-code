@@ -5,6 +5,7 @@ variable "repository" {
     homepage_url = optional(string)
     topics       = optional(list(string))
     is_template  = optional(bool)
+    visibility   = optional(string, "public")
     template = optional(object({
       owner                = string
       repository           = string
@@ -41,6 +42,10 @@ variable "repository" {
   validation {
     condition     = try(var.repository.homepage_url == null || var.repository.homepage_url == "" ? true : startswith(var.repository.homepage_url, "http://") || startswith(var.repository.homepage_url, "https://"), false)
     error_message = "Repository ${try(coalesce(var.repository.name), "")}: homepage_url \"${try(coalesce(var.repository.homepage_url), "")}\" must start with http:// or https://."
+  }
+  validation {
+    condition     = try(contains(["public", "private"], var.repository.visibility), false)
+    error_message = "Repository ${try(coalesce(var.repository.name), "")}: visibility \"${try(coalesce(var.repository.visibility), "")}\" must be public or private."
   }
   validation {
     condition     = try(var.repository.template == null ? true : trimspace(var.repository.template.owner) != "" && trimspace(var.repository.template.repository) != "", false)

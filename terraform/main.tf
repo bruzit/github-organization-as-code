@@ -4,7 +4,7 @@ locals {
   allowed_top_level_keys    = ["organization", "repositories"]
   allowed_organization_keys = ["members", "environments", "rulesets"]
   allowed_members_keys      = ["admins"]
-  allowed_repository_keys   = ["name", "description", "homepage_url", "topics", "is_template", "template", "environments", "rulesets"]
+  allowed_repository_keys   = ["name", "description", "homepage_url", "topics", "is_template", "visibility", "template", "environments", "rulesets"]
   allowed_environment_keys  = ["deployment_branches", "variables", "secrets", "reviewers"]
   allowed_ruleset_keys      = ["target", "bypass_apps"]
 

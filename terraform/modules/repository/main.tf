@@ -16,14 +16,20 @@ resource "github_repository" "this" {
   delete_branch_on_merge      = true
   has_issues                  = true
   is_template                 = var.repository.is_template
+  visibility                  = var.repository.visibility
 
   # advanced_security omitted: setting it errors on public repositories.
-  security_and_analysis {
-    secret_scanning {
-      status = "enabled"
-    }
-    secret_scanning_push_protection {
-      status = "enabled"
+  # Free plan: secret scanning and push protection error on private repositories.
+  dynamic "security_and_analysis" {
+    for_each = var.repository.visibility == "public" ? [1] : []
+
+    content {
+      secret_scanning {
+        status = "enabled"
+      }
+      secret_scanning_push_protection {
+        status = "enabled"
+      }
     }
   }
 

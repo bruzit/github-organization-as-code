@@ -131,3 +131,21 @@ run "several_repositories" {
     error_message = "Expected repositories bar, baz, foo."
   }
 }
+
+run "visibility" {
+  command = plan
+
+  variables {
+    config = "tests/fixtures/visibility.yaml"
+  }
+
+  assert {
+    condition     = module.repository["default"].repository.visibility == "public" && module.repository["public"].repository.visibility == "public" && module.repository["private"].repository.visibility == "private"
+    error_message = "Unexpected visibility."
+  }
+
+  assert {
+    condition     = length(module.repository["public"].repository.security_and_analysis) == 1 && length(module.repository["private"].repository.security_and_analysis) == 0
+    error_message = "security_and_analysis must be managed on public repositories only."
+  }
+}

@@ -1,0 +1,7 @@
+---
+repositories:
+  - name: default
+  - name: public
+    visibility: public
+  - name: private
+    visibility: private

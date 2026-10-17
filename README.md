@@ -169,6 +169,7 @@ repositories:
       - another-topic
     # Properties
     is_template: true # OPTIONAL, DEFAULT false
+    visibility: private # OPTIONAL, DEFAULT public; public or private
     # Contents
     template: # OPTIONAL, DEFAULT none
       owner: bruzit
@@ -250,6 +251,8 @@ Every repository has issues enabled: GitHub Issues are the public intake.
 ### Secret Scanning
 
 Every repository is managed with secret scanning and push protection enabled, so GitHub alerts on committed secrets and blocks pushes containing them. Non-provider patterns and validity checks are not managed.
+
+On the GitHub Free plan, secret scanning and push protection apply to public repositories only.
 
 Set it as source of truth:
 
