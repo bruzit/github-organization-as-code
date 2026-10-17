@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.27.0](https://github.com/bruzit/github-organization-as-code/compare/v0.26.0...v0.27.0) (2026-10-17)
+
+### Features
+
+* add repository visibility ([9653d8c](https://github.com/bruzit/github-organization-as-code/commit/9653d8cd4c997d3488b60434ae0686faad9f4c5d))
+
 ## [0.26.0](https://github.com/bruzit/github-organization-as-code/compare/v0.25.0...v0.26.0) (2026-10-08)
 
 ### Features
