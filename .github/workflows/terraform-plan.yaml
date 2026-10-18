@@ -28,3 +28,13 @@ jobs:
           aws-bucket: ${{ vars.AWS_TF_BUCKET }}
           aws-endpoint-url-s3: ${{ vars.AWS_ENDPOINT_URL_S3 }}
           mode: plan
+
+  required:
+    name: Required (Terraform Plan)
+    needs: [terraform]
+    if: always()
+    runs-on: ubuntu-slim
+    permissions: {}
+    steps:
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1

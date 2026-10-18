@@ -3,8 +3,7 @@ name: Terraform Test
 
 on:
   push:
-    branches: ['**']
-    tags-ignore: ['**']
+    branches: [main]
   pull_request:
 
 permissions:
@@ -66,3 +65,13 @@ jobs:
         run: terraform -chdir=terraform/modules/environment init -backend=false
       - name: Terraform test environment module
         run: terraform -chdir=terraform/modules/environment test
+
+  required:
+    name: Required (Terraform Test)
+    needs: [gate, test]
+    if: always()
+    runs-on: ubuntu-slim
+    permissions: {}
+    steps:
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
