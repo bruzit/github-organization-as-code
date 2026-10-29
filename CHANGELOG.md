@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.30.0](https://github.com/bruzit/github-organization-as-code/compare/v0.29.0...v0.30.0) (2026-10-29)
+
+### Features
+
+* add required status checks to rulesets ([35f3447](https://github.com/bruzit/github-organization-as-code/commit/35f3447ec15f895ee7852503d42cef0b77b64033))
+
 ## [0.29.0](https://github.com/bruzit/github-organization-as-code/compare/v0.28.0...v0.29.0) (2026-10-29)
 
 ### Features
