@@ -21,6 +21,7 @@ variable "repository" {
       target      = optional(string, "branch")
       bypass_apps = optional(list(number), [])
     })), {})
+    required_checks = optional(list(string), [])
   })
   description = "Repository configuration"
   validation {
@@ -58,5 +59,9 @@ variable "repository" {
   validation {
     condition     = try(alltrue([for r in values(var.repository.rulesets) : contains(["branch", "tag"], r.target)]), false)
     error_message = "Repository ${try(coalesce(var.repository.name), "")}: ruleset target must be branch or tag."
+  }
+  validation {
+    condition     = try(alltrue([for c in var.repository.required_checks : trimspace(c) != ""]) && length(distinct(var.repository.required_checks)) == length(var.repository.required_checks), false)
+    error_message = "Repository ${try(coalesce(var.repository.name), "")}: required_checks must be distinct non-empty check names."
   }
 }

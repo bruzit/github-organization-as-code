@@ -110,5 +110,23 @@ resource "github_repository_ruleset" "this" {
         required_approving_review_count = 0
       }
     }
+
+    dynamic "required_status_checks" {
+      for_each = each.value.target == "branch" && length(var.repository.required_checks) > 0 ? [1] : []
+
+      content {
+        strict_required_status_checks_policy = true
+        do_not_enforce_on_create             = true
+
+        dynamic "required_check" {
+          for_each = var.repository.required_checks
+
+          content {
+            context        = required_check.value
+            integration_id = 15368 # GitHub Actions
+          }
+        }
+      }
+    }
   }
 }

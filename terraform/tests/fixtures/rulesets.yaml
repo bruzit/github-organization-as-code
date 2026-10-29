@@ -8,6 +8,8 @@ organization:
 repositories:
   - name: inherit
     visibility: public
+    required_checks:
+      - Required (MegaLinter)
   - name: override
     visibility: public
     rulesets:

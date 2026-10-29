@@ -794,3 +794,59 @@ run "ruleset_bypass_apps_duplicate" {
 
   expect_failures = [var.repository]
 }
+
+run "ruleset_required_checks" {
+  command = plan
+
+  variables {
+    repository = {
+      name            = "foo"
+      visibility      = "public"
+      rulesets        = { default-branch = {}, release-tags = { target = "tag" } }
+      required_checks = ["Required (MegaLinter)", "Required (Terraform Test)"]
+    }
+  }
+
+  assert {
+    condition     = github_repository_ruleset.this["default-branch"].rules[0].required_status_checks[0].strict_required_status_checks_policy && github_repository_ruleset.this["default-branch"].rules[0].required_status_checks[0].do_not_enforce_on_create
+    error_message = "Required status checks must be strict and not enforced on create."
+  }
+
+  assert {
+    condition     = toset([for c in github_repository_ruleset.this["default-branch"].rules[0].required_status_checks[0].required_check : c.context]) == toset(["Required (MegaLinter)", "Required (Terraform Test)"]) && alltrue([for c in github_repository_ruleset.this["default-branch"].rules[0].required_status_checks[0].required_check : c.integration_id == 15368])
+    error_message = "Expected the required checks from GitHub Actions."
+  }
+
+  assert {
+    condition     = length(github_repository_ruleset.this["release-tags"].rules[0].required_status_checks) == 0
+    error_message = "A tag ruleset must not require status checks."
+  }
+}
+
+run "ruleset_required_checks_empty_name" {
+  command = plan
+
+  variables {
+    repository = {
+      name            = "foo"
+      visibility      = "public"
+      required_checks = [" "]
+    }
+  }
+
+  expect_failures = [var.repository]
+}
+
+run "ruleset_required_checks_duplicate" {
+  command = plan
+
+  variables {
+    repository = {
+      name            = "foo"
+      visibility      = "public"
+      required_checks = ["Required (MegaLinter)", "Required (MegaLinter)"]
+    }
+  }
+
+  expect_failures = [var.repository]
+}

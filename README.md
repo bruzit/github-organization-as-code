@@ -187,6 +187,8 @@ repositories:
     # Rulesets
     rulesets: # OPTIONAL, DEFAULT none
       default-branch: ~ # opts out of the organization ruleset
+    required_checks: # OPTIONAL, DEFAULT none; GitHub Actions job names required by every branch ruleset
+      - Required (MegaLinter)
 ```
 
 ### Members
@@ -223,11 +225,13 @@ Environments need the App's repository Administration permission, variables and 
 
 `organization.rulesets` is added to every repository's `rulesets`, with the same replace, `~` opt-out and repository-only semantics as [environments](#environments).
 
-A `branch` ruleset (default `target`) protects the repository's default branch: changes only through a pull request (no approval required, so a single maintainer can merge their own), no force pushes, no deletion, linear history, [conventional commit](https://www.conventionalcommits.org/) messages with a lowercase subject. No required status checks.
+A `branch` ruleset (default `target`) protects the repository's default branch: changes only through a pull request (no approval required, so a single maintainer can merge their own), no force pushes, no deletion, linear history, [conventional commit](https://www.conventionalcommits.org/) messages with a lowercase subject, and the repository's `required_checks` passing on the latest code.
 
 A `tag` ruleset protects release tags `vX.Y.Z` (`refs/tags/v*.*.*`): no update, no deletion; creation stays allowed, e.g. for semantic-release. Major tags `vN` do not match, so a release App can still move them.
 
 On the GitHub Free plan, rulesets are available in public repositories only.
+
+`required_checks` lists check run names reported by GitHub Actions (job `name`). Each must report on every pull request (no `paths` filters on its workflow): a missing check blocks the merge. They are not enforced on branch creation.
 
 `bypass_apps` lists GitHub App IDs that always bypass the ruleset, e.g. a release App pushing a changelog commit to the default branch. Pushes authenticated by `GITHUB_TOKEN` cannot bypass: a repository releasing with `GITHUB_TOKEN` must opt out.
 
