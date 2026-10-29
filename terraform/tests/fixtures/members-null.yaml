@@ -3,3 +3,4 @@ organization:
   members: ~
 repositories:
   - name: foo
+    visibility: public

@@ -140,7 +140,7 @@ run "visibility" {
   }
 
   assert {
-    condition     = module.repository["default"].repository.visibility == "public" && module.repository["public"].repository.visibility == "public" && module.repository["private"].repository.visibility == "private"
+    condition     = module.repository["public"].repository.visibility == "public" && module.repository["private"].repository.visibility == "private"
     error_message = "Unexpected visibility."
   }
 

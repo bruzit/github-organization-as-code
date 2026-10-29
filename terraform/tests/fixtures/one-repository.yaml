@@ -1,3 +1,4 @@
 ---
 repositories:
   - name: foo
+    visibility: public

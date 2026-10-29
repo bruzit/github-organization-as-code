@@ -6,3 +6,4 @@ organization:
       - octocat
 repositories:
   - name: foo
+    visibility: public

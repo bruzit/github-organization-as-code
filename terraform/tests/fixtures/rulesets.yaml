@@ -7,13 +7,17 @@ organization:
     other: {}
 repositories:
   - name: inherit
+    visibility: public
   - name: override
+    visibility: public
     rulesets:
       default-branch: {}
   - name: opt-out
+    visibility: public
     rulesets:
       default-branch: ~
   - name: repository-only
+    visibility: public
     rulesets:
       extra:
         bypass_apps:

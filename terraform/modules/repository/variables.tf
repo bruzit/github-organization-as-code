@@ -5,7 +5,7 @@ variable "repository" {
     homepage_url = optional(string)
     topics       = optional(list(string))
     is_template  = optional(bool)
-    visibility   = optional(string, "public")
+    visibility   = optional(string)
     template = optional(object({
       owner                = string
       repository           = string

@@ -68,6 +68,7 @@ For example, `config.yaml`:
 ---
 repositories:
   - name: .github
+    visibility: public
 ```
 
 ### Use Terraform Action
@@ -169,7 +170,7 @@ repositories:
       - another-topic
     # Properties
     is_template: true # OPTIONAL, DEFAULT false
-    visibility: private # OPTIONAL, DEFAULT public; public or private
+    visibility: private # REQUIRED; public or private
     # Contents
     template: # OPTIONAL, DEFAULT none
       owner: bruzit
