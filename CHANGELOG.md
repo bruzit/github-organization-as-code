@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.28.0](https://github.com/bruzit/github-organization-as-code/compare/v0.27.0...v0.28.0) (2026-10-29)
+
+### ⚠ BREAKING CHANGES
+
+* require repository visibility
+
+### Features
+
+* require repository visibility ([523c123](https://github.com/bruzit/github-organization-as-code/commit/523c1230dcfec92ab04f861abd89eb7c93a87a03))
+
 ## [0.27.0](https://github.com/bruzit/github-organization-as-code/compare/v0.26.0...v0.27.0) (2026-10-17)
 
 ### Features
