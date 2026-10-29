@@ -1,5 +1,8 @@
 ---
 repositories:
   - name: foo
+    visibility: public
   - name: bar
+    visibility: public
   - name: baz
+    visibility: public

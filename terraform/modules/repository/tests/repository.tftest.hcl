@@ -1,11 +1,12 @@
 mock_provider "github" {}
 
-run "name_only" {
+run "minimal" {
   command = plan
 
   variables {
     repository = {
-      name = "foo"
+      name       = "foo"
+      visibility = "public"
     }
   }
 
@@ -51,7 +52,7 @@ run "name_only" {
 
   assert {
     condition     = github_repository.this.visibility == "public"
-    error_message = "Repository must default to public."
+    error_message = "Unexpected visibility."
   }
 
   assert {
@@ -70,7 +71,8 @@ run "name_leading_dot" {
 
   variables {
     repository = {
-      name = ".github"
+      name       = ".github"
+      visibility = "public"
     }
   }
 
@@ -85,7 +87,8 @@ run "name_max_length" {
 
   variables {
     repository = {
-      name = "${join("", [for i in range(100) : "a"])}"
+      name       = "${join("", [for i in range(100) : "a"])}"
+      visibility = "public"
     }
   }
 
@@ -100,7 +103,8 @@ run "name_empty" {
 
   variables {
     repository = {
-      name = ""
+      name       = ""
+      visibility = "public"
     }
   }
 
@@ -112,7 +116,8 @@ run "name_dot" {
 
   variables {
     repository = {
-      name = "."
+      name       = "."
+      visibility = "public"
     }
   }
 
@@ -124,7 +129,8 @@ run "name_dot_dot" {
 
   variables {
     repository = {
-      name = ".."
+      name       = ".."
+      visibility = "public"
     }
   }
 
@@ -136,7 +142,8 @@ run "name_space" {
 
   variables {
     repository = {
-      name = "foo bar"
+      name       = "foo bar"
+      visibility = "public"
     }
   }
 
@@ -148,7 +155,8 @@ run "name_slash" {
 
   variables {
     repository = {
-      name = "foo/bar"
+      name       = "foo/bar"
+      visibility = "public"
     }
   }
 
@@ -160,7 +168,8 @@ run "name_too_long" {
 
   variables {
     repository = {
-      name = "${join("", [for i in range(101) : "a"])}"
+      name       = "${join("", [for i in range(101) : "a"])}"
+      visibility = "public"
     }
   }
 
@@ -173,6 +182,7 @@ run "description" {
   variables {
     repository = {
       name        = "foo"
+      visibility  = "public"
       description = "Foo bar."
     }
   }
@@ -189,6 +199,7 @@ run "homepage_url_https" {
   variables {
     repository = {
       name         = "foo"
+      visibility   = "public"
       homepage_url = "https://example.com"
     }
   }
@@ -205,6 +216,7 @@ run "homepage_url_http" {
   variables {
     repository = {
       name         = "foo"
+      visibility   = "public"
       homepage_url = "http://example.com"
     }
   }
@@ -221,6 +233,7 @@ run "homepage_url_empty" {
   variables {
     repository = {
       name         = "foo"
+      visibility   = "public"
       homepage_url = ""
     }
   }
@@ -237,6 +250,7 @@ run "homepage_url_no_scheme" {
   variables {
     repository = {
       name         = "foo"
+      visibility   = "public"
       homepage_url = "example.com"
     }
   }
@@ -250,6 +264,7 @@ run "homepage_url_ftp" {
   variables {
     repository = {
       name         = "foo"
+      visibility   = "public"
       homepage_url = "ftp://example.com"
     }
   }
@@ -262,8 +277,9 @@ run "topics" {
 
   variables {
     repository = {
-      name   = "foo"
-      topics = ["terraform", "github-organization", "c3po"]
+      name       = "foo"
+      visibility = "public"
+      topics     = ["terraform", "github-organization", "c3po"]
     }
   }
 
@@ -278,8 +294,9 @@ run "topics_empty" {
 
   variables {
     repository = {
-      name   = "foo"
-      topics = []
+      name       = "foo"
+      visibility = "public"
+      topics     = []
     }
   }
 
@@ -294,8 +311,9 @@ run "topics_max" {
 
   variables {
     repository = {
-      name   = "foo"
-      topics = [for i in range(20) : "topic-${i}"]
+      name       = "foo"
+      visibility = "public"
+      topics     = [for i in range(20) : "topic-${i}"]
     }
   }
 
@@ -310,8 +328,9 @@ run "topic_max_length" {
 
   variables {
     repository = {
-      name   = "foo"
-      topics = [join("", [for i in range(50) : "a"])]
+      name       = "foo"
+      visibility = "public"
+      topics     = [join("", [for i in range(50) : "a"])]
     }
   }
 
@@ -326,8 +345,9 @@ run "topics_uppercase" {
 
   variables {
     repository = {
-      name   = "foo"
-      topics = ["Terraform"]
+      name       = "foo"
+      visibility = "public"
+      topics     = ["Terraform"]
     }
   }
 
@@ -339,8 +359,9 @@ run "topics_leading_hyphen" {
 
   variables {
     repository = {
-      name   = "foo"
-      topics = ["-terraform"]
+      name       = "foo"
+      visibility = "public"
+      topics     = ["-terraform"]
     }
   }
 
@@ -352,8 +373,9 @@ run "topics_underscore" {
 
   variables {
     repository = {
-      name   = "foo"
-      topics = ["terraform_github"]
+      name       = "foo"
+      visibility = "public"
+      topics     = ["terraform_github"]
     }
   }
 
@@ -365,8 +387,9 @@ run "topics_empty_string" {
 
   variables {
     repository = {
-      name   = "foo"
-      topics = [""]
+      name       = "foo"
+      visibility = "public"
+      topics     = [""]
     }
   }
 
@@ -378,8 +401,9 @@ run "topics_too_long" {
 
   variables {
     repository = {
-      name   = "foo"
-      topics = [join("", [for i in range(51) : "a"])]
+      name       = "foo"
+      visibility = "public"
+      topics     = [join("", [for i in range(51) : "a"])]
     }
   }
 
@@ -391,8 +415,9 @@ run "topics_too_many" {
 
   variables {
     repository = {
-      name   = "foo"
-      topics = [for i in range(21) : "topic-${i}"]
+      name       = "foo"
+      visibility = "public"
+      topics     = [for i in range(21) : "topic-${i}"]
     }
   }
 
@@ -404,8 +429,9 @@ run "topics_duplicate" {
 
   variables {
     repository = {
-      name   = "foo"
-      topics = ["terraform", "iac", "terraform"]
+      name       = "foo"
+      visibility = "public"
+      topics     = ["terraform", "iac", "terraform"]
     }
   }
 
@@ -418,6 +444,7 @@ run "is_template_true" {
   variables {
     repository = {
       name        = "foo"
+      visibility  = "public"
       is_template = true
     }
   }
@@ -434,6 +461,7 @@ run "is_template_false" {
   variables {
     repository = {
       name        = "foo"
+      visibility  = "public"
       is_template = false
     }
   }
@@ -478,13 +506,26 @@ run "visibility_internal" {
   expect_failures = [var.repository]
 }
 
+run "visibility_missing" {
+  command = plan
+
+  variables {
+    repository = {
+      name = "foo"
+    }
+  }
+
+  expect_failures = [var.repository]
+}
+
 run "template" {
   command = plan
 
   variables {
     repository = {
-      name     = "foo"
-      template = { owner = "bruzit", repository = "template" }
+      name       = "foo"
+      visibility = "public"
+      template   = { owner = "bruzit", repository = "template" }
     }
   }
 
@@ -509,8 +550,9 @@ run "template_include_all_branches" {
 
   variables {
     repository = {
-      name     = "foo"
-      template = { owner = "bruzit", repository = "template", include_all_branches = true }
+      name       = "foo"
+      visibility = "public"
+      template   = { owner = "bruzit", repository = "template", include_all_branches = true }
     }
   }
 
@@ -525,8 +567,9 @@ run "template_owner_empty" {
 
   variables {
     repository = {
-      name     = "foo"
-      template = { owner = "", repository = "template" }
+      name       = "foo"
+      visibility = "public"
+      template   = { owner = "", repository = "template" }
     }
   }
 
@@ -538,8 +581,9 @@ run "template_repository_empty" {
 
   variables {
     repository = {
-      name     = "foo"
-      template = { owner = "bruzit", repository = " " }
+      name       = "foo"
+      visibility = "public"
+      template   = { owner = "bruzit", repository = " " }
     }
   }
 
@@ -551,7 +595,8 @@ run "rulesets_none" {
 
   variables {
     repository = {
-      name = "foo"
+      name       = "foo"
+      visibility = "public"
     }
   }
 
@@ -566,8 +611,9 @@ run "ruleset" {
 
   variables {
     repository = {
-      name     = "foo"
-      rulesets = { default-branch = { bypass_apps = [3144447, 42] } }
+      name       = "foo"
+      visibility = "public"
+      rulesets   = { default-branch = { bypass_apps = [3144447, 42] } }
     }
   }
 
@@ -622,8 +668,9 @@ run "ruleset_tag" {
 
   variables {
     repository = {
-      name     = "foo"
-      rulesets = { release-tags = { target = "tag" } }
+      name       = "foo"
+      visibility = "public"
+      rulesets   = { release-tags = { target = "tag" } }
     }
   }
 
@@ -658,8 +705,9 @@ run "ruleset_target_invalid" {
 
   variables {
     repository = {
-      name     = "foo"
-      rulesets = { default-branch = { target = "push" } }
+      name       = "foo"
+      visibility = "public"
+      rulesets   = { default-branch = { target = "push" } }
     }
   }
 
@@ -671,8 +719,9 @@ run "ruleset_bypass_apps_absent" {
 
   variables {
     repository = {
-      name     = "foo"
-      rulesets = { default-branch = {} }
+      name       = "foo"
+      visibility = "public"
+      rulesets   = { default-branch = {} }
     }
   }
 
@@ -687,8 +736,9 @@ run "ruleset_bypass_apps_empty" {
 
   variables {
     repository = {
-      name     = "foo"
-      rulesets = { default-branch = { bypass_apps = [] } }
+      name       = "foo"
+      visibility = "public"
+      rulesets   = { default-branch = { bypass_apps = [] } }
     }
   }
 
@@ -703,8 +753,9 @@ run "ruleset_bypass_apps_fraction" {
 
   variables {
     repository = {
-      name     = "foo"
-      rulesets = { default-branch = { bypass_apps = [1.5] } }
+      name       = "foo"
+      visibility = "public"
+      rulesets   = { default-branch = { bypass_apps = [1.5] } }
     }
   }
 
@@ -716,8 +767,9 @@ run "ruleset_bypass_apps_zero" {
 
   variables {
     repository = {
-      name     = "foo"
-      rulesets = { default-branch = { bypass_apps = [0] } }
+      name       = "foo"
+      visibility = "public"
+      rulesets   = { default-branch = { bypass_apps = [0] } }
     }
   }
 
@@ -729,8 +781,9 @@ run "ruleset_bypass_apps_duplicate" {
 
   variables {
     repository = {
-      name     = "foo"
-      rulesets = { default-branch = { bypass_apps = [42, 42] } }
+      name       = "foo"
+      visibility = "public"
+      rulesets   = { default-branch = { bypass_apps = [42, 42] } }
     }
   }
 

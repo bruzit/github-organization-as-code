@@ -11,13 +11,17 @@ organization:
     staging: {}
 repositories:
   - name: inherit
+    visibility: public
   - name: override
+    visibility: public
     environments:
       release: {}
   - name: opt-out
+    visibility: public
     environments:
       release: ~
   - name: repository-only
+    visibility: public
     environments:
       production:
         deployment_branches:
