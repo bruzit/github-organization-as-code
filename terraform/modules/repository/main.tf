@@ -106,6 +106,7 @@ resource "github_repository_ruleset" "this" {
       for_each = each.value.target == "branch" ? [1] : []
 
       content {
+        allowed_merge_methods           = ["rebase", "squash"]
         required_approving_review_count = 0
       }
     }

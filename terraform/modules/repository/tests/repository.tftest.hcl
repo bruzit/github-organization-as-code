@@ -612,6 +612,11 @@ run "ruleset" {
   }
 
   assert {
+    condition     = github_repository_ruleset.this["default-branch"].rules[0].pull_request[0].allowed_merge_methods == tolist(["rebase", "squash"])
+    error_message = "Expected rebase and squash merges only."
+  }
+
+  assert {
     condition     = [for a in github_repository_ruleset.this["default-branch"].bypass_actors : a.actor_id] == [3144447, 42] && alltrue([for a in github_repository_ruleset.this["default-branch"].bypass_actors : a.actor_type == "Integration" && a.bypass_mode == "always"])
     error_message = "Expected the Apps to always bypass."
   }
