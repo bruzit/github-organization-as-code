@@ -42,6 +42,8 @@ repositories:
     topics:
       - repository-template
     is_template: true
+    required_checks:
+      - Required (MegaLinter)
   - name: template-use
     visibility: public
     template:

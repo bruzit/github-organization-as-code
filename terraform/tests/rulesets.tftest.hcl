@@ -19,6 +19,11 @@ run "rulesets" {
   }
 
   assert {
+    condition     = [for c in module.repository["inherit"].rulesets["default-branch"].rules[0].required_status_checks[0].required_check : c.context] == ["Required (MegaLinter)"]
+    error_message = "Expected the repository required checks on its branch rulesets."
+  }
+
+  assert {
     condition     = length(module.repository["override"].rulesets["default-branch"].bypass_actors) == 0
     error_message = "A repository ruleset must replace the organization one wholesale."
   }
