@@ -8,35 +8,14 @@ on:
 
 permissions:
   contents: read
-  pull-requests: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  gate:
-    name: Gate
-    runs-on: ubuntu-slim
-    outputs:
-      run: ${{ steps.check.outputs.run }}
-    steps:
-      - id: check
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          run=true
-          if [ "$GITHUB_EVENT_NAME" = push ] && [ "$GITHUB_REF_NAME" != main ] \
-            && [ "$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" \
-                    --jq '[.[] | select(.state == "open")] | length')" -gt 0 ]; then
-            run=false
-          fi
-          echo "run=$run" >>"$GITHUB_OUTPUT"
-
   test:
     name: Terraform Test (${{ matrix.terraform }})
-    needs: gate
-    if: needs.gate.outputs.run == 'true'
     runs-on: ubuntu-slim
     strategy:
       fail-fast: false
@@ -68,7 +47,7 @@ jobs:
 
   required:
     name: Required (Terraform Test)
-    needs: [gate, test]
+    needs: test
     if: always()
     runs-on: ubuntu-slim
     permissions: {}
