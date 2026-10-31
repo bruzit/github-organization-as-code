@@ -7,6 +7,15 @@ organization:
     release:
       deployment_branches:
         - ~DEFAULT_BRANCH
+      variables:
+        GH_SEM_REL_APP_ID: "3144447"
+      secrets:
+        - GH_SEM_REL_APP_PEM_FILE
+    autofix:
+      variables:
+        GH_AUTOFIX_APP_ID: "5543444"
+      secrets:
+        - GH_AUTOFIX_APP_PEM_FILE
   rulesets:
     default-branch:
       bypass_apps:
@@ -52,3 +61,4 @@ repositories:
       repository: template
     environments:
       release: ~
+      autofix: ~
