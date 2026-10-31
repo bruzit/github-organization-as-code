@@ -1,31 +1,39 @@
 # GitHub Organization as Code
 
+[![License](https://img.shields.io/github/license/bruzit/github-organization-as-code)](LICENSE)
+[![Last commit](https://img.shields.io/github/last-commit/bruzit/github-organization-as-code)](https://github.com/bruzit/github-organization-as-code/commits)
+[![MegaLinter](https://github.com/bruzit/github-organization-as-code/actions/workflows/megalinter.yaml/badge.svg)](https://github.com/bruzit/github-organization-as-code/actions/workflows/megalinter.yaml)
+[![Terraform Test](https://github.com/bruzit/github-organization-as-code/actions/workflows/terraform-test.yaml/badge.svg)](https://github.com/bruzit/github-organization-as-code/actions/workflows/terraform-test.yaml)
+[![Terraform Plan](https://github.com/bruzit/github-organization-as-code/actions/workflows/terraform-plan.yaml/badge.svg)](https://github.com/bruzit/github-organization-as-code/actions/workflows/terraform-plan.yaml)
+[![Semantic Release](https://github.com/bruzit/github-organization-as-code/actions/workflows/semantic-release.yaml/badge.svg)](https://github.com/bruzit/github-organization-as-code/actions/workflows/semantic-release.yaml)
+[![Terraform Apply (test)](https://github.com/bruzit/github-organization-as-code/actions/workflows/test.yaml/badge.svg)](https://github.com/bruzit/github-organization-as-code/actions/workflows/test.yaml)
+
 GitOps workflow turning a declarative YAML organization definition into GitHub resources with Terraform, authenticated by a GitHub App.
 
 ## Features
 
-- **Automated GitHub Organization management** - Define repositories using simple YAML file.
-  - **Repository metadata** - Define description, homepage URL, topics.
-  - **Environments** - Define deployment environments per repository or once for every repository.
-    - **Variables and secrets** - Define environment variables and secret placeholders.
-  - **Rulesets** - Protect default branches and release tags per repository or once for every repository.
-- **GitOps Composite Action** - Manage configurations using pull requests and automate updates using a [composite action](action.yaml).
-- **Terraform** - Uses Terraform under the hood to apply changes efficiently.
-- **Terraform State Management** - Stores Terraform state in an S3-compatible bucket, e.g. Cloudflare R2, one workspace per organization.
-- **GitHub App Integration** - Uses a GitHub App for authentication and API interactions.
+- Declarative YAML definition of organization owners and repositories: metadata, template, environments with variables and secret placeholders, rulesets; organization-wide environments and rulesets with per-repository overrides.
+- Repository defaults: archive on removal, branch cleanup, rebase and squash merges only, issues, secret scanning.
+- Composite action [`action.yaml`](action.yaml): apply on the default branch, plan on pull requests with read-only credentials.
+- Terraform state in an S3-compatible bucket, e.g. Cloudflare R2, one workspace per organization.
+- GitHub App authentication.
 
-## Installation and Configuration
+## Requirements
 
-- Configure an S3-compatible bucket to store Terraform state files, see [Terraform State Backend](#terraform-state-backend).
-- Set up a GitHub App and its installation to handle authentication and authorization for your GitHub Organization.
-- Implement GitOps by setting up a GitHub repository with:
-  - YAML-based configuration
-  - GitHub workflows
-  - Environment variables and secrets
+- Platform: GitHub Actions, GitHub organization; on the GitHub Free plan, rulesets and secret scanning work in public repositories only.
+- S3-compatible storage with conditional writes.
+- Local use: Terraform `~> 1.15`; direnv optional.
+
+## Installation and Setup
+
+1. Create the state bucket: [Terraform State Backend](#terraform-state-backend).
+2. Create and install the GitHub Apps: [GitHub App](#github-app).
+3. Write the configuration file: [Configuration File](#configuration-file).
+4. Add the workflow, environments, variables and secrets: [Use Terraform Action](#use-terraform-action).
 
 ### Terraform State Backend
 
-The [S3 backend](terraform/config.tf) works with any S3-compatible storage; BruzIT uses Cloudflare R2 with the bucket `bruzit-terraform-github`. The action passes the bucket at init (`-backend-config="bucket=..."` from `aws-bucket`) and the endpoint as `AWS_ENDPOINT_URL_S3` (from `aws-endpoint-url-s3`, e.g. `https://ACCOUNT_ID.r2.cloudflarestorage.com`). `skip_credentials_validation` and `skip_requesting_account_id` skip the AWS STS and IAM calls non-AWS storage does not serve; `use_lockfile` locks the state with a lock object in the bucket, which needs conditional writes.
+The S3 backend ([`terraform/config.tf`](terraform/config.tf)) works with any S3-compatible storage; BruzIT uses Cloudflare R2 with the bucket `bruzit-terraform-github`. The action passes the bucket at init (`-backend-config="bucket=..."` from `aws-bucket`) and the endpoint as `AWS_ENDPOINT_URL_S3` (from `aws-endpoint-url-s3`, e.g. `https://ACCOUNT_ID.r2.cloudflarestorage.com`). `skip_credentials_validation` and `skip_requesting_account_id` skip the AWS STS and IAM calls non-AWS storage does not serve; `use_lockfile` locks the state with a lock object in the bucket, which needs conditional writes.
 
 Each organization has its own Terraform workspace, `TF_WORKSPACE` set to `owner`, so several organizations share one bucket with separate states.
 
@@ -58,11 +66,11 @@ To create a GitHub App and a GitHub App Installation:
     - Install App
       - _your organization_: **Install**
 
+Create a second App, same permissions read-only, for the `plan` environment.
+
 ### Configuration File
 
-Create GitHub organization YAML configuration file. See [GitHub Organization Configuration YAML](#github-organization-configuration-yaml) below.
-
-For example, `config.yaml`:
+Minimal `config.yaml`; full schema in [GitHub Organization Configuration YAML](#github-organization-configuration-yaml):
 
 ```yaml
 ---
@@ -111,9 +119,9 @@ jobs:
           aws-endpoint-url-s3: ${{ vars.AWS_ENDPOINT_URL_S3 }}
 ```
 
-The [action](action.yaml) runs the Terraform code shipped with the action against the configuration file at `path`, relative to the workspace, so the caller checks out its repository first. It sets up the latest Terraform, checks formatting, initializes the S3 backend in `aws-bucket`, selects the workspace named after `owner`, validates, and applies with `-auto-approve`. `concurrency` queues pushes instead of failing the apply on the state lock.
+The action ([`action.yaml`](action.yaml)) runs the Terraform code shipped with the action against the configuration file at `path`, relative to the workspace, so the caller checks out its repository first. It sets up the latest Terraform, checks formatting, initializes the S3 backend in `aws-bucket`, selects the workspace named after `owner`, validates, and applies with `-auto-approve`. `concurrency` queues pushes instead of failing the apply on the state lock.
 
-`mode: plan` runs `terraform plan -lock=false -refresh=false` instead of the apply, for pull requests with read-only credentials (a read-only S3 key cannot write the state lock); no refresh, it compares against the last applied state. Run it on `pull_request` with `environment: plan`.
+`mode: plan` runs `terraform plan -lock=false -refresh=false` instead of the apply, for pull requests with read-only credentials (a read-only S3 key cannot write the state lock); no refresh, it compares against the last applied state. The plan goes to the job summary, truncated to 1 MB. Run it on `pull_request` with `environment: plan`.
 
 CI credentials live in GitHub environment variables and secrets, not repository ones, one environment per mode with the same names:
 
@@ -193,7 +201,7 @@ repositories:
 
 ### Members
 
-`organization.members.admins` lists the organization owners. Only owners are managed: other members, teams and outside collaborators stay unmanaged. A listed user who is not a member yet is invited and stays pending until they accept. Every owner has `prevent_destroy`, so removing one from the list fails the plan; demote or remove an owner explicitly (`removed` block or `terraform state rm`). Existing memberships are imported, which needs the Terraform workspace named after the organization.
+`organization.members.admins` lists the organization owners. Only owners are managed: other members, teams and outside collaborators stay unmanaged. A listed user who is not a member yet is invited and stays pending until they accept. Every owner has `prevent_destroy`, so removing one from the list fails the plan; demote or remove an owner explicitly (`removed` block or `terraform state rm`).
 
 Members need the App's organization Members permission, see [GitHub App](#github-app).
 
@@ -225,7 +233,7 @@ Environments need the App's repository Administration permission, variables and 
 
 `organization.rulesets` is added to every repository's `rulesets`, with the same replace, `~` opt-out and repository-only semantics as [environments](#environments).
 
-A `branch` ruleset (default `target`) protects the repository's default branch: changes only through a pull request (no approval required, so a single maintainer can merge their own), no force pushes, no deletion, linear history, [conventional commit](https://www.conventionalcommits.org/) messages with a lowercase subject, and the repository's `required_checks` passing on the latest code.
+A `branch` ruleset (default `target`) protects the repository's default branch: changes only through a pull request (no approval required, so a single maintainer can merge their own), no force pushes, no deletion, linear history, [Conventional Commits 1.0.0 specification](https://www.conventionalcommits.org/en/v1.0.0/) messages with a lowercase subject, and the repository's `required_checks` passing on the latest code.
 
 A `tag` ruleset protects release tags `vX.Y.Z` (`refs/tags/v*.*.*`): no update, no deletion; creation stays allowed, e.g. for semantic-release. Major tags `vN` do not match, so a release App can still move them.
 
@@ -239,7 +247,7 @@ Rulesets need the App's repository Administration permission, see [GitHub App](#
 
 ### Removal Safety
 
-Removing a repository from the YAML archives it instead of deleting it. Every repository is created with `archive_on_destroy = true`, so `terraform apply` after a removal archives the repository — the live repository is preserved while being removed from the organization's active configuration.
+Removing a repository from the YAML archives it instead of deleting it (`archive_on_destroy = true`).
 
 ### Branch Cleanup
 
@@ -247,7 +255,7 @@ Every repository is managed with `delete_branch_on_merge = true`, so GitHub dele
 
 ### Merge Methods
 
-Every repository allows rebase and squash merges only, merge commits are off. A squash merge commit takes its title and message from the commits, not the pull request: a single-commit pull request squashes into its commit subject, so it passes the [ruleset](#rulesets) commit message pattern. A multi-commit pull request squash defaults to the pull request title; edit it or rebase instead.
+Every repository allows rebase and squash merges only, merge commits are off. A squash merge commit takes its title and message from the commits, not the pull request: a single-commit pull request squashes into its commit subject, so it passes the [Rulesets](#rulesets) commit message pattern. A multi-commit pull request squash defaults to the pull request title; edit it or rebase instead.
 
 ### Issues
 
@@ -255,20 +263,11 @@ Every repository has issues enabled: GitHub Issues are the public intake.
 
 ### Secret Scanning
 
-Every repository is managed with secret scanning and push protection enabled, so GitHub alerts on committed secrets and blocks pushes containing them. Non-provider patterns and validity checks are not managed.
-
-On the GitHub Free plan, secret scanning and push protection apply to public repositories only.
-
-Set it as source of truth:
-
-```shell
-# The path is relative to the terraform main module (terraform directory)
-export TF_VAR_config="../test.yaml"
-```
+Public repositories are managed with secret scanning and push protection enabled, so GitHub alerts on committed secrets and blocks pushes containing them. Private repositories are left unmanaged (unavailable on the GitHub Free plan). Non-provider patterns and validity checks are not managed.
 
 ### Local Usage
 
-Export the local equivalents from the [table above](#use-terraform-action), the PEM contents as `GITHUB_APP_PEM_FILE`, plus `TF_WORKSPACE` and `TF_VAR_config`, or when using direnv copy the templates [`.env.tmpl`](.env.tmpl), [`.env.plan.tmpl`](.env.plan.tmpl) and [`.env.apply.tmpl`](.env.apply.tmpl) without `.tmpl` and fill them in: `.env` holds the backend bucket and endpoint, owner and configuration path, `.env.plan` and `.env.apply` the credentials of the `plan` and apply environments; [`.envrc`](.envrc) sets `TF_WORKSPACE` to `GITHUB_OWNER`. Plan mode with read-only credentials is the default, apply credentials load only for a single command with `TF_MODE=apply`.
+Export the local equivalents from the [Use Terraform Action](#use-terraform-action) table, the PEM contents as `GITHUB_APP_PEM_FILE`, plus `TF_WORKSPACE` and `TF_VAR_config`, or when using direnv copy the templates [`.env.tmpl`](.env.tmpl), [`.env.plan.tmpl`](.env.plan.tmpl) and [`.env.apply.tmpl`](.env.apply.tmpl) without `.tmpl` and fill them in: `.env` holds the backend bucket and endpoint, owner and configuration path, `.env.plan` and `.env.apply` the credentials of the `plan` and apply environments; [`.envrc`](.envrc) sets `TF_WORKSPACE` to `GITHUB_OWNER`. `TF_VAR_config` is relative to `terraform/`, e.g. `../test.yaml`. Plan mode with read-only credentials is the default, apply credentials load only for a single command with `TF_MODE=apply`.
 
 ```shell
 direnv allow
@@ -281,13 +280,50 @@ terraform -chdir=terraform plan -lock=false -refresh=false
 TF_MODE=apply direnv exec . terraform -chdir=terraform apply
 ```
 
+## Support
+
+Community, best effort; [open a GitHub issue](../../issues).
+
 ## Development
 
 Format Terraform configuration by `terraform -chdir=terraform fmt -recursive`.
 
+## Testing
+
 Test by `terraform -chdir=terraform init -backend=false && terraform -chdir=terraform test`, the repository module by `terraform -chdir=terraform/modules/repository init -backend=false && terraform -chdir=terraform/modules/repository test`, the environment module likewise in `terraform/modules/environment`.
 
-## Copyright and Licensing
+## Integration and Deployment
 
-[MIT License](LICENSE)  
+| Workflow                                                            | Trigger                          | Purpose                                                                                                                     |
+|---------------------------------------------------------------------|----------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| [MegaLinter](.github/workflows/megalinter.yaml)                     | Pull request                     | Lint changed files; required check `Required (MegaLinter)`                                                                  |
+| [MegaLinter Scheduled](.github/workflows/megalinter-scheduled.yaml) | Weekly, Monday 06:00 UTC; manual | Lint the whole codebase                                                                                                     |
+| [Terraform Test](.github/workflows/terraform-test.yaml)             | Pull request; push to `main`     | Formatting check and tests, Terraform 1.15 and 1.16; required check `Required (Terraform Test)`                             |
+| [Terraform Plan](.github/workflows/terraform-plan.yaml)             | Pull request                     | Plan [`test.yaml`](test.yaml) against the test organization, `plan` environment; required check `Required (Terraform Plan)` |
+| [Terraform Apply (test)](.github/workflows/test.yaml)               | Push to `main`                   | Apply `test.yaml` to the test organization, `test` environment                                                              |
+| [Semantic Release](.github/workflows/semantic-release.yaml)         | Push to `main`                   | Version, changelog and GitHub release via the shared semantic-release action                                                |
+
+## Contributing
+
+Open a pull request to `main`. Commits follow the [Conventional Commits 1.0.0 specification](https://www.conventionalcommits.org/en/v1.0.0/), from which semantic-release sets versions and the changelog automatically.
+
+## License and Copyright
+
+MIT License: [`LICENSE`](LICENSE)  
 Copyright © 2026 Martin Bružina
+
+## References
+
+- [BruzIT GitHub Actions and Workflows](https://github.com/bruzit/github-actions-and-workflows)
+- [integrations/github Terraform provider documentation](https://registry.terraform.io/providers/integrations/github/latest/docs)
+
+## Stats
+
+| Metric           | Badges                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Commits          | [![Commits total](https://img.shields.io/github/commit-activity/t/bruzit/github-organization-as-code?label=commits%20total)](https://github.com/bruzit/github-organization-as-code/commits/main)                                                                                                                                                                                                                                                                                                                   |
+| Issues           | [![Issues open](https://img.shields.io/github/issues/bruzit/github-organization-as-code?label=issues)](https://github.com/bruzit/github-organization-as-code/issues) [![Issues total](https://img.shields.io/github/issues-search?query=repo%3Abruzit%2Fgithub-organization-as-code%20is%3Aissue&label=issues%20total)](https://github.com/bruzit/github-organization-as-code/issues?q=is%3Aissue)                                                                                                                 |
+| Pull requests    | [![Pull requests open, not draft](https://img.shields.io/github/issues-search?query=repo%3Abruzit%2Fgithub-organization-as-code%20is%3Apr%20is%3Aopen%20draft%3Afalse&label=PRs%20open)](https://github.com/bruzit/github-organization-as-code/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse) [![Pull requests total](https://img.shields.io/github/issues-search?query=repo%3Abruzit%2Fgithub-organization-as-code%20is%3Apr&label=PRs%20total)](https://github.com/bruzit/github-organization-as-code/pulls?q=is%3Apr) |
+| Checks on `main` | [![Checks on main](https://img.shields.io/github/check-runs/bruzit/github-organization-as-code/main?label=checks%20%28main%29)](https://github.com/bruzit/github-organization-as-code/actions?query=branch%3Amain)                                                                                                                                                                                                                                                                                                 |
+| Releases         | [![Latest release](https://img.shields.io/github/v/release/bruzit/github-organization-as-code)](https://github.com/bruzit/github-organization-as-code/releases/latest) [![Commits since latest release](https://img.shields.io/github/commits-since/bruzit/github-organization-as-code/latest)](https://github.com/bruzit/github-organization-as-code/releases)                                                                                                                                                    |
+| Community        | [![Stargazers](https://img.shields.io/github/stars/bruzit/github-organization-as-code)](https://github.com/bruzit/github-organization-as-code/stargazers) [![Forks](https://img.shields.io/github/forks/bruzit/github-organization-as-code)](https://github.com/bruzit/github-organization-as-code/forks) [![Contributors](https://img.shields.io/github/contributors/bruzit/github-organization-as-code)](https://github.com/bruzit/github-organization-as-code/graphs/contributors)                              |
