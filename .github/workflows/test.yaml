@@ -1,5 +1,5 @@
 ---
-name: Test
+name: Terraform Apply (test)
 on:
   push:
     branches:
