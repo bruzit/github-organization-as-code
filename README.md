@@ -5,6 +5,8 @@
 [![MegaLinter](https://github.com/bruzit/github-organization-as-code/actions/workflows/megalinter.yaml/badge.svg)](https://github.com/bruzit/github-organization-as-code/actions/workflows/megalinter.yaml)
 [![Terraform Test](https://github.com/bruzit/github-organization-as-code/actions/workflows/terraform-test.yaml/badge.svg)](https://github.com/bruzit/github-organization-as-code/actions/workflows/terraform-test.yaml)
 [![Terraform Plan](https://github.com/bruzit/github-organization-as-code/actions/workflows/terraform-plan.yaml/badge.svg)](https://github.com/bruzit/github-organization-as-code/actions/workflows/terraform-plan.yaml)
+[![Semantic Release](https://github.com/bruzit/github-organization-as-code/actions/workflows/semantic-release.yaml/badge.svg)](https://github.com/bruzit/github-organization-as-code/actions/workflows/semantic-release.yaml)
+[![Test](https://github.com/bruzit/github-organization-as-code/actions/workflows/test.yaml/badge.svg)](https://github.com/bruzit/github-organization-as-code/actions/workflows/test.yaml)
 
 GitOps workflow turning a declarative YAML organization definition into GitHub resources with Terraform, authenticated by a GitHub App.
 
