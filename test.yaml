@@ -38,7 +38,7 @@ repositories:
           - EXAMPLE_SECRET
   - name: template
     visibility: public
-    description: "Standardized repository scaffold for BruzIT projects. Pre-configured with semantic-release, license boilerplate, README structure, and initial v0.0.0 tag."
+    description: "Repository template for BruzIT projects: MegaLinter and semantic-release callers, release configuration, license and README skeleton."
     topics:
       - repository-template
     is_template: true
@@ -46,6 +46,7 @@ repositories:
       - Required (MegaLinter)
   - name: template-use
     visibility: public
+    description: "Test repository created from a template by BruzIT GitHub Organization as Code."
     template:
       owner: bruzit-test
       repository: template
