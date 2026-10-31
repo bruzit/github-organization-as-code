@@ -6,7 +6,7 @@
 [![Terraform Test](https://github.com/bruzit/github-organization-as-code/actions/workflows/terraform-test.yaml/badge.svg)](https://github.com/bruzit/github-organization-as-code/actions/workflows/terraform-test.yaml)
 [![Terraform Plan](https://github.com/bruzit/github-organization-as-code/actions/workflows/terraform-plan.yaml/badge.svg)](https://github.com/bruzit/github-organization-as-code/actions/workflows/terraform-plan.yaml)
 [![Semantic Release](https://github.com/bruzit/github-organization-as-code/actions/workflows/semantic-release.yaml/badge.svg)](https://github.com/bruzit/github-organization-as-code/actions/workflows/semantic-release.yaml)
-[![Test](https://github.com/bruzit/github-organization-as-code/actions/workflows/test.yaml/badge.svg)](https://github.com/bruzit/github-organization-as-code/actions/workflows/test.yaml)
+[![Terraform Apply (test)](https://github.com/bruzit/github-organization-as-code/actions/workflows/test.yaml/badge.svg)](https://github.com/bruzit/github-organization-as-code/actions/workflows/test.yaml)
 
 GitOps workflow turning a declarative YAML organization definition into GitHub resources with Terraform, authenticated by a GitHub App.
 
@@ -300,7 +300,7 @@ Test by `terraform -chdir=terraform init -backend=false && terraform -chdir=terr
 | [MegaLinter Scheduled](.github/workflows/megalinter-scheduled.yaml) | Weekly, Monday 06:00 UTC; manual | Lint the whole codebase                                                                                                     |
 | [Terraform Test](.github/workflows/terraform-test.yaml)             | Pull request; push to `main`     | Formatting check and tests, Terraform 1.15 and 1.16; required check `Required (Terraform Test)`                             |
 | [Terraform Plan](.github/workflows/terraform-plan.yaml)             | Pull request                     | Plan [`test.yaml`](test.yaml) against the test organization, `plan` environment; required check `Required (Terraform Plan)` |
-| [Test](.github/workflows/test.yaml)                                 | Push to `main`                   | Apply `test.yaml` to the test organization, `test` environment                                                              |
+| [Terraform Apply (test)](.github/workflows/test.yaml)               | Push to `main`                   | Apply `test.yaml` to the test organization, `test` environment                                                              |
 | [Semantic Release](.github/workflows/semantic-release.yaml)         | Push to `main`                   | Version, changelog and GitHub release via the shared semantic-release action                                                |
 
 ## Contributing
