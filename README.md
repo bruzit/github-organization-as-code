@@ -10,24 +10,24 @@ GitOps workflow turning a declarative YAML organization definition into GitHub r
 
 ## Features
 
-- **Automated GitHub Organization management** - Define repositories using simple YAML file.
-  - **Repository metadata** - Define description, homepage URL, topics.
-  - **Environments** - Define deployment environments per repository or once for every repository.
-    - **Variables and secrets** - Define environment variables and secret placeholders.
-  - **Rulesets** - Protect default branches and release tags per repository or once for every repository.
-- **GitOps Composite Action** - Manage configurations using pull requests and automate updates using the composite action [`action.yaml`](action.yaml).
-- **Terraform** - Uses Terraform under the hood to apply changes efficiently.
-- **Terraform State Management** - Stores Terraform state in an S3-compatible bucket, e.g. Cloudflare R2, one workspace per organization.
-- **GitHub App Integration** - Uses a GitHub App for authentication and API interactions.
+- Declarative YAML definition of organization owners and repositories: metadata, template, environments with variables and secret placeholders, rulesets; organization-wide environments and rulesets with per-repository overrides.
+- Repository defaults: archive on removal, branch cleanup, rebase and squash merges only, issues, secret scanning.
+- Composite action [`action.yaml`](action.yaml): apply on the default branch, plan on pull requests with read-only credentials.
+- Terraform state in an S3-compatible bucket, e.g. Cloudflare R2, one workspace per organization.
+- GitHub App authentication.
+
+## Requirements
+
+- Platform: GitHub Actions, GitHub organization; on the GitHub Free plan, rulesets and secret scanning work in public repositories only.
+- S3-compatible storage with conditional writes.
+- Local use: Terraform `~> 1.15`; direnv optional.
 
 ## Installation and Setup
 
-- Configure an S3-compatible bucket to store Terraform state files, see [Terraform State Backend](#terraform-state-backend).
-- Set up a GitHub App and its installation to handle authentication and authorization for your GitHub Organization.
-- Implement GitOps by setting up a GitHub repository with:
-  - YAML-based configuration
-  - GitHub workflows
-  - Environment variables and secrets
+1. Create the state bucket: [Terraform State Backend](#terraform-state-backend).
+2. Create and install the GitHub Apps: [GitHub App](#github-app).
+3. Write the configuration file: [Configuration File](#configuration-file).
+4. Add the workflow, environments, variables and secrets: [Use Terraform Action](#use-terraform-action).
 
 ### Terraform State Backend
 
@@ -64,11 +64,11 @@ To create a GitHub App and a GitHub App Installation:
     - Install App
       - _your organization_: **Install**
 
+Create a second App, same permissions read-only, for the `plan` environment.
+
 ### Configuration File
 
-Create GitHub organization YAML configuration file. See [GitHub Organization Configuration YAML](#github-organization-configuration-yaml) below.
-
-For example, `config.yaml`:
+Minimal `config.yaml`; full schema in [GitHub Organization Configuration YAML](#github-organization-configuration-yaml):
 
 ```yaml
 ---
@@ -119,7 +119,7 @@ jobs:
 
 The action ([`action.yaml`](action.yaml)) runs the Terraform code shipped with the action against the configuration file at `path`, relative to the workspace, so the caller checks out its repository first. It sets up the latest Terraform, checks formatting, initializes the S3 backend in `aws-bucket`, selects the workspace named after `owner`, validates, and applies with `-auto-approve`. `concurrency` queues pushes instead of failing the apply on the state lock.
 
-`mode: plan` runs `terraform plan -lock=false -refresh=false` instead of the apply, for pull requests with read-only credentials (a read-only S3 key cannot write the state lock); no refresh, it compares against the last applied state. Run it on `pull_request` with `environment: plan`.
+`mode: plan` runs `terraform plan -lock=false -refresh=false` instead of the apply, for pull requests with read-only credentials (a read-only S3 key cannot write the state lock); no refresh, it compares against the last applied state. The plan goes to the job summary, truncated to 1 MB. Run it on `pull_request` with `environment: plan`.
 
 CI credentials live in GitHub environment variables and secrets, not repository ones, one environment per mode with the same names:
 
@@ -199,7 +199,7 @@ repositories:
 
 ### Members
 
-`organization.members.admins` lists the organization owners. Only owners are managed: other members, teams and outside collaborators stay unmanaged. A listed user who is not a member yet is invited and stays pending until they accept. Every owner has `prevent_destroy`, so removing one from the list fails the plan; demote or remove an owner explicitly (`removed` block or `terraform state rm`). Existing memberships are imported, which needs the Terraform workspace named after the organization.
+`organization.members.admins` lists the organization owners. Only owners are managed: other members, teams and outside collaborators stay unmanaged. A listed user who is not a member yet is invited and stays pending until they accept. Every owner has `prevent_destroy`, so removing one from the list fails the plan; demote or remove an owner explicitly (`removed` block or `terraform state rm`).
 
 Members need the App's organization Members permission, see [GitHub App](#github-app).
 
@@ -245,7 +245,7 @@ Rulesets need the App's repository Administration permission, see [GitHub App](#
 
 ### Removal Safety
 
-Removing a repository from the YAML archives it instead of deleting it. Every repository is created with `archive_on_destroy = true`, so `terraform apply` after a removal archives the repository — the live repository is preserved while being removed from the organization's active configuration.
+Removing a repository from the YAML archives it instead of deleting it (`archive_on_destroy = true`).
 
 ### Branch Cleanup
 
@@ -261,20 +261,11 @@ Every repository has issues enabled: GitHub Issues are the public intake.
 
 ### Secret Scanning
 
-Every repository is managed with secret scanning and push protection enabled, so GitHub alerts on committed secrets and blocks pushes containing them. Non-provider patterns and validity checks are not managed.
-
-On the GitHub Free plan, secret scanning and push protection apply to public repositories only.
-
-Set it as source of truth:
-
-```shell
-# The path is relative to the terraform main module (terraform directory)
-export TF_VAR_config="../test.yaml"
-```
+Public repositories are managed with secret scanning and push protection enabled, so GitHub alerts on committed secrets and blocks pushes containing them. Private repositories are left unmanaged (unavailable on the GitHub Free plan). Non-provider patterns and validity checks are not managed.
 
 ### Local Usage
 
-Export the local equivalents from the [Use Terraform Action](#use-terraform-action) table, the PEM contents as `GITHUB_APP_PEM_FILE`, plus `TF_WORKSPACE` and `TF_VAR_config`, or when using direnv copy the templates [`.env.tmpl`](.env.tmpl), [`.env.plan.tmpl`](.env.plan.tmpl) and [`.env.apply.tmpl`](.env.apply.tmpl) without `.tmpl` and fill them in: `.env` holds the backend bucket and endpoint, owner and configuration path, `.env.plan` and `.env.apply` the credentials of the `plan` and apply environments; [`.envrc`](.envrc) sets `TF_WORKSPACE` to `GITHUB_OWNER`. Plan mode with read-only credentials is the default, apply credentials load only for a single command with `TF_MODE=apply`.
+Export the local equivalents from the [Use Terraform Action](#use-terraform-action) table, the PEM contents as `GITHUB_APP_PEM_FILE`, plus `TF_WORKSPACE` and `TF_VAR_config`, or when using direnv copy the templates [`.env.tmpl`](.env.tmpl), [`.env.plan.tmpl`](.env.plan.tmpl) and [`.env.apply.tmpl`](.env.apply.tmpl) without `.tmpl` and fill them in: `.env` holds the backend bucket and endpoint, owner and configuration path, `.env.plan` and `.env.apply` the credentials of the `plan` and apply environments; [`.envrc`](.envrc) sets `TF_WORKSPACE` to `GITHUB_OWNER`. `TF_VAR_config` is relative to `terraform/`, e.g. `../test.yaml`. Plan mode with read-only credentials is the default, apply credentials load only for a single command with `TF_MODE=apply`.
 
 ```shell
 direnv allow
@@ -299,6 +290,17 @@ Format Terraform configuration by `terraform -chdir=terraform fmt -recursive`.
 
 Test by `terraform -chdir=terraform init -backend=false && terraform -chdir=terraform test`, the repository module by `terraform -chdir=terraform/modules/repository init -backend=false && terraform -chdir=terraform/modules/repository test`, the environment module likewise in `terraform/modules/environment`.
 
+## Integration and Deployment
+
+| Workflow                                                            | Trigger                          | Purpose                                                                                                                     |
+|---------------------------------------------------------------------|----------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| [MegaLinter](.github/workflows/megalinter.yaml)                     | Pull request                     | Lint changed files; required check `Required (MegaLinter)`                                                                  |
+| [MegaLinter Scheduled](.github/workflows/megalinter-scheduled.yaml) | Weekly, Monday 06:00 UTC; manual | Lint the whole codebase                                                                                                     |
+| [Terraform Test](.github/workflows/terraform-test.yaml)             | Pull request; push to `main`     | Formatting check and tests, Terraform 1.15 and 1.16; required check `Required (Terraform Test)`                             |
+| [Terraform Plan](.github/workflows/terraform-plan.yaml)             | Pull request                     | Plan [`test.yaml`](test.yaml) against the test organization, `plan` environment; required check `Required (Terraform Plan)` |
+| [Test](.github/workflows/test.yaml)                                 | Push to `main`                   | Apply `test.yaml` to the test organization, `test` environment                                                              |
+| [Semantic Release](.github/workflows/semantic-release.yaml)         | Push to `main`                   | Version, changelog and GitHub release via the shared semantic-release action                                                |
+
 ## Contributing
 
 Open a pull request to `main`. Commits follow the [Conventional Commits 1.0.0 specification](https://www.conventionalcommits.org/en/v1.0.0/), from which semantic-release sets versions and the changelog automatically.
@@ -307,6 +309,11 @@ Open a pull request to `main`. Commits follow the [Conventional Commits 1.0.0 sp
 
 MIT License: [`LICENSE`](LICENSE)  
 Copyright © 2026 Martin Bružina
+
+## References
+
+- [BruzIT GitHub Actions and Workflows](https://github.com/bruzit/github-actions-and-workflows)
+- [integrations/github Terraform provider documentation](https://registry.terraform.io/providers/integrations/github/latest/docs)
 
 ## Stats
 
