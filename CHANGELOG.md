@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.31.0](https://github.com/bruzit/github-organization-as-code/compare/v0.30.0...v0.31.0) (2026-11-17)
+
+### Features
+
+* enable private vulnerability reporting on public repositories ([5ce81cc](https://github.com/bruzit/github-organization-as-code/commit/5ce81cc126e9336988bb092a75545c0c03fd78e7))
+
 ## [0.30.0](https://github.com/bruzit/github-organization-as-code/compare/v0.29.0...v0.30.0) (2026-10-29)
 
 ### Features
