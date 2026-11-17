@@ -45,6 +45,23 @@ resource "github_repository" "this" {
   }
 }
 
+locals {
+  private_vulnerability_reporting_path = "/repos/${github_repository.this.full_name}/private-vulnerability-reporting"
+}
+
+# Not supported by the github provider; available for public repositories only.
+resource "restapi_object" "private_vulnerability_reporting" {
+  count = var.repository.visibility == "public" ? 1 : 0
+
+  path          = local.private_vulnerability_reporting_path
+  read_path     = local.private_vulnerability_reporting_path
+  update_path   = local.private_vulnerability_reporting_path
+  destroy_path  = local.private_vulnerability_reporting_path
+  object_id     = github_repository.this.name
+  create_method = "PUT"
+  data          = jsonencode({ enabled = true })
+}
+
 # github_repository.default_branch is deprecated.
 data "github_repository" "this" {
   count = length(var.repository.environments) > 0 ? 1 : 0

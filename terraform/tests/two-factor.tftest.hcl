@@ -1,4 +1,5 @@
 mock_provider "github" {}
+mock_provider "restapi" {}
 
 variables {
   config = "tests/fixtures/one-repository.yaml"

@@ -6,6 +6,10 @@ terraform {
       source  = "integrations/github"
       version = "~> 6.0"
     }
+    restapi = {
+      source  = "Mastercard/restapi"
+      version = "~> 3.0"
+    }
   }
 
   backend "s3" {
@@ -23,4 +27,13 @@ terraform {
 
 provider "github" {
   app_auth {}
+}
+
+provider "restapi" {
+  uri          = "https://api.github.com"
+  bearer_token = var.github_token
+  headers = {
+    Accept               = "application/vnd.github+json"
+    X-GitHub-Api-Version = "2022-11-28"
+  }
 }

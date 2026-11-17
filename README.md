@@ -13,14 +13,14 @@ GitOps workflow turning a declarative YAML organization definition into GitHub r
 ## Features
 
 - Declarative YAML definition of organization owners and repositories: metadata, template, environments with variables and secret placeholders, rulesets; organization-wide environments and rulesets with per-repository overrides.
-- Repository defaults: archive on removal, branch cleanup, rebase and squash merges only, issues, secret scanning.
+- Repository defaults: archive on removal, branch cleanup, rebase and squash merges only, issues, secret scanning, private vulnerability reporting.
 - Composite action [`action.yaml`](action.yaml): apply on the default branch, plan on pull requests with read-only credentials.
 - Terraform state in an S3-compatible bucket, e.g. Cloudflare R2, one workspace per organization.
 - GitHub App authentication.
 
 ## Requirements
 
-- Platform: GitHub Actions, GitHub organization; on the GitHub Free plan, rulesets and secret scanning work in public repositories only.
+- Platform: GitHub Actions, GitHub organization; on the GitHub Free plan, rulesets and secret scanning work in public repositories only; private vulnerability reporting is for public repositories only.
 - S3-compatible storage with conditional writes.
 - Local use: Terraform `~> 1.15`; direnv optional.
 
@@ -264,6 +264,10 @@ Every repository has issues enabled: GitHub Issues are the public intake.
 ### Secret Scanning
 
 Public repositories are managed with secret scanning and push protection enabled, so GitHub alerts on committed secrets and blocks pushes containing them. Private repositories are left unmanaged (unavailable on the GitHub Free plan). Non-provider patterns and validity checks are not managed.
+
+### Private Vulnerability Reporting
+
+Public repositories are managed with private vulnerability reporting enabled, so anyone can report a vulnerability privately as a draft security advisory. The github provider does not support it, so [Mastercard/restapi](https://registry.terraform.io/providers/Mastercard/restapi/latest) calls the REST API with an App installation token that [`action.yaml`](action.yaml) creates; locally set `TF_VAR_github_token`.
 
 ### Local Usage
 

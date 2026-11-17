@@ -5,6 +5,7 @@ mock_provider "github" {
     }
   }
 }
+mock_provider "restapi" {}
 
 run "repositories_missing" {
   command = plan

@@ -15,6 +15,7 @@ mock_provider "github" {
     }
   }
 }
+mock_provider "restapi" {}
 
 run "environments" {
   command = apply
