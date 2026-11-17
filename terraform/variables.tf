@@ -50,3 +50,10 @@ variable "config" {
     error_message = "Invalid ruleset(s) in ${var.config}: ${try(join(", ", flatten([for s in concat([{ label = "organization", rulesets = try(yamldecode(file(var.config)).organization.rulesets, null), opt_out = false }], [for r in yamldecode(file(var.config)).repositories : { label = r.name, rulesets = try(r.rulesets, null), opt_out = true }]) : s.rulesets == null ? [] : !can(keys(s.rulesets)) ? ["${s.label}.rulesets"] : [for n, e in s.rulesets : "${s.label}.rulesets.${n}" if !(s.opt_out && e == null) && !try(length(setsubtract(keys(e), local.allowed_ruleset_keys)) == 0, false)]])), "")}; each must be a map of ${join(", ", local.allowed_ruleset_keys)}, or ~ under a repository to opt out of an organization ruleset."
   }
 }
+
+variable "github_token" {
+  type        = string
+  default     = null
+  sensitive   = true
+  description = "GitHub App installation token for REST calls the github provider lacks"
+}

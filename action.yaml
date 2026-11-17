@@ -63,10 +63,19 @@ runs:
         TF_WORKSPACE: ${{ inputs.owner }}
         TF_IN_AUTOMATION: true
       run: terraform -chdir="$GITHUB_ACTION_PATH/terraform" validate
+    - name: Create GitHub App token
+      id: app-token
+      uses: actions/create-github-app-token@v3
+      with:
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ inputs.app-pem-file }}
+        owner: ${{ inputs.owner }}
+        permission-administration: ${{ inputs.mode == 'apply' && 'write' || 'read' }}
     - name: Terraform ${{ inputs.mode }}
       shell: bash
       env:
         MODE: ${{ inputs.mode }}
+        TF_VAR_github_token: ${{ steps.app-token.outputs.token }}
         CONFIG_PATH: ${{ inputs.path }}
         GITHUB_OWNER: ${{ inputs.owner }}
         GITHUB_APP_ID: ${{ inputs.app-id }}

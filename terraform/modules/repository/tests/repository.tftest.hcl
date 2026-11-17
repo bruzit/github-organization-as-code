@@ -1,4 +1,5 @@
 mock_provider "github" {}
+mock_provider "restapi" {}
 
 run "minimal" {
   command = plan
@@ -63,6 +64,11 @@ run "minimal" {
   assert {
     condition     = github_repository.this.security_and_analysis[0].secret_scanning_push_protection[0].status == "enabled"
     error_message = "Repository must enable secret scanning push protection."
+  }
+
+  assert {
+    condition     = restapi_object.private_vulnerability_reporting[0].create_method == "PUT" && jsondecode(restapi_object.private_vulnerability_reporting[0].data) == { enabled = true }
+    error_message = "Public repository must enable private vulnerability reporting."
   }
 }
 
@@ -490,6 +496,11 @@ run "visibility_private" {
   assert {
     condition     = length(github_repository.this.security_and_analysis) == 0
     error_message = "Private repository must not manage security_and_analysis."
+  }
+
+  assert {
+    condition     = length(restapi_object.private_vulnerability_reporting) == 0
+    error_message = "Private repository must not manage private vulnerability reporting."
   }
 }
 

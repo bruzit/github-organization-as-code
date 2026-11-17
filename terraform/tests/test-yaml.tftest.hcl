@@ -10,6 +10,7 @@ mock_provider "github" {
     }
   }
 }
+mock_provider "restapi" {}
 
 override_resource {
   target = github_membership.admin
