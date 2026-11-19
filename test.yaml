@@ -25,7 +25,7 @@ organization:
 repositories:
   - name: .github
     visibility: public
-    description: "BruzIT Test organization profile and the declarative YAML definition of its repositories, reconciled into GitHub by GitHub Organization as Code."
+    description: "BruzIT Test organization profile."
     topics:
       - github-organization
       - organization-profile
