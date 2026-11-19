@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.31.1](https://github.com/bruzit/github-organization-as-code/compare/v0.31.0...v0.31.1) (2026-11-19)
+
+### Bug Fixes
+
+* **test:** describe bruzit-test .github as organization profile only ([a6476ce](https://github.com/bruzit/github-organization-as-code/commit/a6476ce63b08e5b45ee8e8445676a733a2649d8c))
+
 ## [0.31.0](https://github.com/bruzit/github-organization-as-code/compare/v0.30.0...v0.31.0) (2026-11-17)
 
 ### Features
