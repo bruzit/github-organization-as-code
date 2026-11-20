@@ -35,11 +35,11 @@ GitOps workflow turning a declarative YAML organization definition into GitHub r
 
 The S3 backend ([`terraform/config.tf`](terraform/config.tf)) works with any S3-compatible storage; BruzIT uses Cloudflare R2 with the bucket `bruzit-terraform-github`. The action passes the bucket at init (`-backend-config="bucket=..."` from `aws-bucket`) and the endpoint as `AWS_ENDPOINT_URL_S3` (from `aws-endpoint-url-s3`, e.g. `https://ACCOUNT_ID.r2.cloudflarestorage.com`). `skip_credentials_validation` and `skip_requesting_account_id` skip the AWS STS and IAM calls non-AWS storage does not serve; `use_lockfile` locks the state with a lock object in the bucket, which needs conditional writes.
 
-Each organization has its own Terraform workspace, `TF_WORKSPACE` set to `owner`, so several organizations share one bucket with separate states.
+Each organization has its own Terraform workspace (`TF_WORKSPACE` set to `owner`), so several organizations share one bucket with separate states.
 
 ### GitHub App
 
-To create a GitHub App and a GitHub App Installation:
+Create a GitHub App and install it:
 
 - GitHub / _Organization_ / Settings / Developer settings / GitHub Apps
   - **New GitHub App**
@@ -66,7 +66,7 @@ To create a GitHub App and a GitHub App Installation:
     - Install App
       - _your organization_: **Install**
 
-Create a second App, same permissions read-only, for the `plan` environment.
+For the `plan` environment, create a second App with the same permissions, read-only.
 
 ### Configuration File
 
@@ -121,9 +121,9 @@ jobs:
 
 The action ([`action.yaml`](action.yaml)) runs the Terraform code shipped with the action against the configuration file at `path`, relative to the workspace, so the caller checks out its repository first. It sets up the latest Terraform, checks formatting, initializes the S3 backend in `aws-bucket`, selects the workspace named after `owner`, validates, and applies with `-auto-approve`. `concurrency` queues pushes instead of failing the apply on the state lock.
 
-`mode: plan` runs `terraform plan -lock=false -refresh=false` instead of the apply, for pull requests with read-only credentials (a read-only S3 key cannot write the state lock); no refresh, it compares against the last applied state. The plan goes to the job summary, truncated to 1 MB. Run it on `pull_request` with `environment: plan`.
+`mode: plan` runs `terraform plan -lock=false -refresh=false` instead of the apply, for pull requests with read-only credentials (a read-only S3 key can't write the state lock). Without refresh, it compares against the last applied state. The plan goes to the job summary, truncated to 1 MB. Run it on `pull_request` with `environment: plan`.
 
-CI credentials live in GitHub environment variables and secrets, not repository ones, one environment per mode with the same names:
+CI credentials live in GitHub environment variables and secrets, not repository ones: one environment per mode, with the same names:
 
 | Name                        | Kind     | Local equivalent                    |
 |-----------------------------|----------|-------------------------------------|
@@ -201,7 +201,7 @@ repositories:
 
 ### Members
 
-`organization.members.admins` lists the organization owners. Only owners are managed: other members, teams and outside collaborators stay unmanaged. A listed user who is not a member yet is invited and stays pending until they accept. Every owner has `prevent_destroy`, so removing one from the list fails the plan; demote or remove an owner explicitly (`removed` block or `terraform state rm`).
+`organization.members.admins` lists the organization owners. Only owners are managed: other members, teams and outside collaborators stay unmanaged. A listed user who isn't a member yet gets an invitation and stays pending until they accept. Every owner has `prevent_destroy`, so removing one from the list fails the plan; to demote or remove an owner, do it explicitly (`removed` block or `terraform state rm`).
 
 Members need the App's organization Members permission, see [GitHub App](#github-app).
 
@@ -217,7 +217,7 @@ Require two-factor authentication by hand in _Organization_ / Settings / Authent
 
 `deployment_branches` limits deployments to branches matching the name patterns; without it every branch can deploy. `~DEFAULT_BRANCH` stands for the repository's default branch, resolved by Terraform (GitHub deployment branch policies have no such token). `reviewers` requires one of the listed users to approve a job targeting the environment (self-review allowed, for a single maintainer); without it the job runs without an approval step. No wait timer. Repository admins cannot bypass environment protection rules.
 
-`variables` maps variable names to values, managed by Terraform: a value changed by hand is reverted on the next apply.
+`variables` maps variable names to values, managed by Terraform: it reverts a value changed by hand on the next apply.
 
 `secrets` lists secret names only; values never come from the YAML. Terraform creates each secret with the placeholder value `set-by-hand` and never updates it, so set the real value by hand, before any job uses the environment:
 
@@ -251,11 +251,11 @@ Removing a repository from the YAML archives it instead of deleting it (`archive
 
 ### Branch Cleanup
 
-Every repository is managed with `delete_branch_on_merge = true`, so GitHub deletes a pull request's head branch once it is merged. A deleted branch can be restored from its pull request.
+Every repository gets `delete_branch_on_merge = true`, so GitHub deletes a pull request's head branch once it's merged. Restore a deleted branch from its pull request.
 
 ### Merge Methods
 
-Every repository allows rebase and squash merges only, merge commits are off. A squash merge commit takes its title and message from the commits, not the pull request: a single-commit pull request squashes into its commit subject, so it passes the [Rulesets](#rulesets) commit message pattern. A multi-commit pull request squash defaults to the pull request title; edit it or rebase instead.
+Every repository allows rebase and squash merges only; merge commits are off. A squash merge commit takes its title and message from the commits, not the pull request: a single-commit pull request squashes into its commit subject, so it passes the [Rulesets](#rulesets) commit message pattern. A multi-commit pull request squash defaults to the pull request title; edit it or rebase instead.
 
 ### Issues
 
@@ -263,15 +263,15 @@ Every repository has issues enabled: GitHub Issues are the public intake.
 
 ### Secret Scanning
 
-Public repositories are managed with secret scanning and push protection enabled, so GitHub alerts on committed secrets and blocks pushes containing them. Private repositories are left unmanaged (unavailable on the GitHub Free plan). Non-provider patterns and validity checks are not managed.
+Public repositories get secret scanning and push protection, so GitHub alerts on committed secrets and blocks pushes containing them. Private repositories stay unmanaged (unavailable on the GitHub Free plan). Non-provider patterns and validity checks aren't managed.
 
 ### Private Vulnerability Reporting
 
-Public repositories are managed with private vulnerability reporting enabled, so anyone can report a vulnerability privately as a draft security advisory. The github provider does not support it, so [Mastercard/restapi](https://registry.terraform.io/providers/Mastercard/restapi/latest) calls the REST API with an App installation token that [`action.yaml`](action.yaml) creates; locally set `TF_VAR_github_token`.
+Public repositories get private vulnerability reporting, so anyone can report a vulnerability privately as a draft security advisory. The github provider doesn't support it, so [Mastercard/restapi](https://registry.terraform.io/providers/Mastercard/restapi/latest) calls the REST API with an App installation token that [`action.yaml`](action.yaml) creates; locally, set `TF_VAR_github_token`.
 
 ### Local Usage
 
-Export the local equivalents from the [Use Terraform Action](#use-terraform-action) table, the PEM contents as `GITHUB_APP_PEM_FILE`, plus `TF_WORKSPACE` and `TF_VAR_config`, or when using direnv copy the templates [`.env.tmpl`](.env.tmpl), [`.env.plan.tmpl`](.env.plan.tmpl) and [`.env.apply.tmpl`](.env.apply.tmpl) without `.tmpl` and fill them in: `.env` holds the backend bucket and endpoint, owner and configuration path, `.env.plan` and `.env.apply` the credentials of the `plan` and apply environments; [`.envrc`](.envrc) sets `TF_WORKSPACE` to `GITHUB_OWNER`. `TF_VAR_config` is relative to `terraform/`, e.g. `../test.yaml`. Plan mode with read-only credentials is the default, apply credentials load only for a single command with `TF_MODE=apply`.
+Export the local equivalents from the [Use Terraform Action](#use-terraform-action) table, the PEM contents as `GITHUB_APP_PEM_FILE`, plus `TF_WORKSPACE` and `TF_VAR_config`. With direnv, copy [`.env.tmpl`](.env.tmpl), [`.env.plan.tmpl`](.env.plan.tmpl) and [`.env.apply.tmpl`](.env.apply.tmpl) to the same names without `.tmpl` and fill them in: `.env` holds the backend bucket and endpoint, owner and configuration path; `.env.plan` and `.env.apply` hold the credentials of the `plan` and apply environments. [`.envrc`](.envrc) sets `TF_WORKSPACE` to `GITHUB_OWNER`. `TF_VAR_config` is relative to `terraform/`, e.g. `../test.yaml`. Plan mode with read-only credentials is the default; apply credentials load only for a single command with `TF_MODE=apply`.
 
 ```shell
 direnv allow
@@ -286,15 +286,15 @@ TF_MODE=apply direnv exec . terraform -chdir=terraform apply
 
 ## Support
 
-Community, best effort; [open a GitHub issue](../../issues).
+[Open a GitHub issue](../../issues). I answer best effort, as a community project.
 
 ## Development
 
-Format Terraform configuration by `terraform -chdir=terraform fmt -recursive`.
+Format the Terraform configuration: `terraform -chdir=terraform fmt -recursive`.
 
 ## Testing
 
-Test by `terraform -chdir=terraform init -backend=false && terraform -chdir=terraform test`, the repository module by `terraform -chdir=terraform/modules/repository init -backend=false && terraform -chdir=terraform/modules/repository test`, the environment module likewise in `terraform/modules/environment`.
+Run the tests: `terraform -chdir=terraform init -backend=false && terraform -chdir=terraform test`; for the repository module, `terraform -chdir=terraform/modules/repository init -backend=false && terraform -chdir=terraform/modules/repository test`; for the environment module, likewise in `terraform/modules/environment`.
 
 ## Integration and Deployment
 
@@ -309,7 +309,7 @@ Test by `terraform -chdir=terraform init -backend=false && terraform -chdir=terr
 
 ## Contributing
 
-Open a pull request to `main`. Commits follow the [Conventional Commits 1.0.0 specification](https://www.conventionalcommits.org/en/v1.0.0/), from which semantic-release sets versions and the changelog automatically.
+Open a pull request to `main`. Write commits per the [Conventional Commits 1.0.0 specification](https://www.conventionalcommits.org/en/v1.0.0/); semantic-release sets the version and changelog from them.
 
 ## License and Copyright
 
