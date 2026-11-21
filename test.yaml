@@ -45,6 +45,13 @@ repositories:
           EXAMPLE: example
         secrets:
           - EXAMPLE_SECRET
+      renovate:
+        deployment_branches:
+          - ~DEFAULT_BRANCH
+        variables:
+          GH_RENOVATE_APP_ID: "5859731"
+        secrets:
+          - GH_RENOVATE_APP_PEM_FILE
   - name: template
     visibility: public
     description: "Repository template for BruzIT projects: MegaLinter and semantic-release callers, release configuration, license and README skeleton."
