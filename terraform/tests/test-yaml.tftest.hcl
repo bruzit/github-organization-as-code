@@ -59,8 +59,8 @@ run "test_yaml" {
   }
 
   assert {
-    condition     = keys(module.repository[".github"].environments) == ["autofix", "production", "release"] && keys(module.repository["template"].environments) == ["autofix", "release"] && length(module.repository["template-use"].environments) == 0
-    error_message = "Expected .github autofix, production and release, template autofix and release, template-use none."
+    condition     = keys(module.repository[".github"].environments) == ["autofix", "production", "release", "renovate"] && keys(module.repository["template"].environments) == ["autofix", "release"] && length(module.repository["template-use"].environments) == 0
+    error_message = "Expected .github autofix, production, release and renovate, template autofix and release, template-use none."
   }
 
   assert {
@@ -69,8 +69,8 @@ run "test_yaml" {
   }
 
   assert {
-    condition     = module.repository[".github"].environments["production"].variables["EXAMPLE"].value == "example" && keys(module.repository[".github"].environments["production"].secrets) == ["EXAMPLE_SECRET"] && module.repository[".github"].environments["release"].variables["GH_SEM_REL_APP_ID"].value == "3144447" && keys(module.repository[".github"].environments["release"].secrets) == ["GH_SEM_REL_APP_PEM_FILE"] && module.repository[".github"].environments["autofix"].variables["GH_AUTOFIX_APP_ID"].value == "5543444" && keys(module.repository[".github"].environments["autofix"].secrets) == ["GH_AUTOFIX_APP_PEM_FILE"]
-    error_message = "Expected .github production EXAMPLE, release GH_SEM_REL_APP_ID and GH_SEM_REL_APP_PEM_FILE, autofix GH_AUTOFIX_APP_ID and GH_AUTOFIX_APP_PEM_FILE."
+    condition     = module.repository[".github"].environments["production"].variables["EXAMPLE"].value == "example" && keys(module.repository[".github"].environments["production"].secrets) == ["EXAMPLE_SECRET"] && module.repository[".github"].environments["release"].variables["GH_SEM_REL_APP_ID"].value == "3144447" && keys(module.repository[".github"].environments["release"].secrets) == ["GH_SEM_REL_APP_PEM_FILE"] && module.repository[".github"].environments["autofix"].variables["GH_AUTOFIX_APP_ID"].value == "5543444" && keys(module.repository[".github"].environments["autofix"].secrets) == ["GH_AUTOFIX_APP_PEM_FILE"] && module.repository[".github"].environments["renovate"].variables["GH_RENOVATE_APP_ID"].value == "5859731" && keys(module.repository[".github"].environments["renovate"].secrets) == ["GH_RENOVATE_APP_PEM_FILE"]
+    error_message = "Expected .github production EXAMPLE, release GH_SEM_REL_APP_ID and GH_SEM_REL_APP_PEM_FILE, autofix GH_AUTOFIX_APP_ID and GH_AUTOFIX_APP_PEM_FILE, renovate GH_RENOVATE_APP_ID and GH_RENOVATE_APP_PEM_FILE."
   }
 
   assert {
