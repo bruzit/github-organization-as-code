@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.32.0](https://github.com/bruzit/github-organization-as-code/compare/v0.31.1...v0.32.0) (2026-11-26)
+
+### Features
+
+* **repository:** manage dependabot vulnerability alerts ([ab7b293](https://github.com/bruzit/github-organization-as-code/commit/ab7b2930aff0ff9f4845e6cb509a01b8aa404e62))
+
 ## [0.31.1](https://github.com/bruzit/github-organization-as-code/compare/v0.31.0...v0.31.1) (2026-11-19)
 
 ### Bug Fixes
