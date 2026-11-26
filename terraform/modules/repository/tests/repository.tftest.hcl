@@ -70,6 +70,11 @@ run "minimal" {
     condition     = restapi_object.private_vulnerability_reporting[0].create_method == "PUT" && jsondecode(restapi_object.private_vulnerability_reporting[0].data) == { enabled = true }
     error_message = "Public repository must enable private vulnerability reporting."
   }
+
+  assert {
+    condition     = github_repository_vulnerability_alerts.this.repository == "foo" && github_repository_vulnerability_alerts.this.enabled
+    error_message = "Repository must enable Dependabot vulnerability alerts."
+  }
 }
 
 run "name_leading_dot" {
@@ -501,6 +506,11 @@ run "visibility_private" {
   assert {
     condition     = length(restapi_object.private_vulnerability_reporting) == 0
     error_message = "Private repository must not manage private vulnerability reporting."
+  }
+
+  assert {
+    condition     = github_repository_vulnerability_alerts.this.repository == "foo" && github_repository_vulnerability_alerts.this.enabled
+    error_message = "Private repository must enable Dependabot vulnerability alerts."
   }
 }
 

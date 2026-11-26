@@ -13,7 +13,7 @@ GitOps workflow turning a declarative YAML organization definition into GitHub r
 ## Features
 
 - Declarative YAML definition of organization owners and repositories: metadata, template, environments with variables and secret placeholders, rulesets; organization-wide environments and rulesets with per-repository overrides.
-- Repository defaults: archive on removal, branch cleanup, rebase and squash merges only, issues, secret scanning, private vulnerability reporting.
+- Repository defaults: archive on removal, branch cleanup, rebase and squash merges only, issues, secret scanning, private vulnerability reporting, Dependabot alerts.
 - Composite action [`action.yaml`](action.yaml): apply on the default branch, plan on pull requests with read-only credentials.
 - Terraform state in an S3-compatible bucket, e.g. Cloudflare R2, one workspace per organization.
 - GitHub App authentication.
@@ -268,6 +268,10 @@ Public repositories get secret scanning and push protection, so GitHub alerts on
 ### Private Vulnerability Reporting
 
 Public repositories get private vulnerability reporting, so anyone can report a vulnerability privately as a draft security advisory. The github provider doesn't support it, so [Mastercard/restapi](https://registry.terraform.io/providers/Mastercard/restapi/latest) calls the REST API with an App installation token that [`action.yaml`](action.yaml) creates; locally, set `TF_VAR_github_token`.
+
+### Dependabot Alerts
+
+Every repository gets Dependabot vulnerability alerts, so GitHub alerts on dependencies with known vulnerabilities. Security updates are left to Renovate.
 
 ### Local Usage
 
